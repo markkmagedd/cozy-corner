@@ -2,24 +2,58 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #020617;
+  
+  /* Modern E-commerce Pastel Palette */
+  --pastel-blue: #E0F2FE;
+  --pastel-pink: #FCE7F3;
+  --pastel-green: #DCFCE7;
+  --pastel-yellow: #FEF9C3;
+  --pastel-purple: #F3E8FF;
+  --pastel-orange: #FFEDD5;
+  --pastel-teal: #CCFBF1;
+  
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #020617;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
-  --color-accent: #D4AF37;
-  --color-accent-foreground: #FFFFFF;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   
-  /* Custom spacing and curves */
+  --color-pastel-blue: var(--pastel-blue);
+  --color-pastel-pink: var(--pastel-pink);
+  --color-pastel-green: var(--pastel-green);
+  --color-pastel-yellow: var(--pastel-yellow);
+  --color-pastel-purple: var(--pastel-purple);
+  --color-pastel-orange: var(--pastel-orange);
+  --color-pastel-teal: var(--pastel-teal);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
 }
 
 @layer base {
+  * {
+    border-color: var(--border);
+  }
+  
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -29,15 +63,8 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

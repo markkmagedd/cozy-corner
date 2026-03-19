@@ -1,32 +1,44 @@
-import React, { Suspense } from 'react';
-import { InfiniteProductGrid } from '@/src/components/feature/InfiniteProductGrid';
-import { CategoryNav } from '@/src/components/ui/CategoryNav';
-import { Loader2 } from 'lucide-react';
+"use client";
 
-export default function HomePage() {
+import { useEffect, useState } from "react";
+import { Navbar } from "@/src/components/ui/Navbar";
+import { Footer } from "@/src/components/ui/Footer";
+import { HeroBanner } from "@/src/components/feature/HeroBanner";
+import { CategoryGrid } from "@/src/components/feature/CategoryGrid";
+import { DealsSection } from "@/src/components/feature/DealsSection";
+import { mockCategories } from "@/src/data/mock/categories";
+import { mockProducts } from "@/src/data/mock/products";
+
+export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulated delay for skeleton loader demonstration (Q2)
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200);
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-6 flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
-          The Hotel Shop
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-neutral-500">
-          Curated essentials from our resort collective, handcrafted for your lifestyle and adventures after your stay.
-        </p>
-      </div>
+    <main className="min-h-screen">
+      <Navbar />
+      
+      <HeroBanner 
+        headline="Gear up for adventure"
+        tagline="Premium collections for the bold explorer, curated for performance and style."
+        ctaText="Shop the new collection"
+        ctaLink="/new-arrivals"
+      />
 
-      <CategoryNav />
+      <CategoryGrid categories={mockCategories} />
+      
+      <DealsSection 
+        products={mockProducts} 
+        isLoading={isLoading} 
+      />
 
-      <section aria-labelledby="products-heading">
-        <h2 id="products-heading" className="sr-only">Products</h2>
-        <Suspense fallback={
-          <div className="flex min-h-[400px] w-full items-center justify-center">
-            <Loader2 className="h-10 w-10 animate-spin text-neutral-300" />
-          </div>
-        }>
-          <InfiniteProductGrid />
-        </Suspense>
-      </section>
+      <Footer />
     </main>
   );
 }

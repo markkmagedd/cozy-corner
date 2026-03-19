@@ -1,33 +1,16 @@
-export interface Color {
+export interface Category {
+  id: string;
   name: string;
-  hexCode: string;
+  pastelColorClass: string; // Tailwind bg class for the pastel block (e.g., 'bg-pastel-blue')
+  imageUrl: string; // URL or static path for icons/images
 }
 
 export interface Product {
   id: string;
-  slug: string;
   name: string;
-  description: string;
-  category: string; // matches Category slug
-  images: string[];
-  availableSizes: string[];
-  availableColors: Color[];
-}
-
-export interface Category {
-  id: string;
-  slug: string;
-  name: string;
-}
-
-export interface PaginatedProducts {
-  products: Product[];
-  totalCount: number;
-  hasMore: boolean;
-}
-
-export interface GetProductsArgs {
-  categorySlug?: string;
-  page?: number;
-  limit?: number;
+  price: number;
+  originalPrice?: number;
+  discountBadge?: string;
+  imageUrl: string;
+  categoryId: string;
 }
