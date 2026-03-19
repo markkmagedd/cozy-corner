@@ -1,10 +1,10 @@
-import { mockCategories, mockProducts } from "@/src/data/mock-product-data";
+import { getProducts } from "@/src/lib/actions/product-actions";
+import { getCategories } from "@/src/lib/actions/category-actions";
 import { CategorySidebar } from "@/src/components/layout/CategorySidebar";
 import { ProductGrid } from "@/src/components/products/ProductGrid";
 import { Pagination } from "@/src/components/products/Pagination";
 import { Navbar } from "@/src/components/ui/Navbar";
 import { Footer } from "@/src/components/ui/Footer";
-import { Product } from "@/src/types/product";
 import { ChevronDown, Filter } from "lucide-react";
 
 interface SearchParams {
@@ -19,13 +19,24 @@ export default async function ProductsPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
-  const currentCategory = params.category;
+  const currentCategorySlug = params.category;
   const currentPage = parseInt(params.page || "1");
   const pageSize = 6;
 
-  const filteredProducts = currentCategory 
-    ? mockProducts.filter((p: Product) => p.categoryId === currentCategory)
-    : mockProducts;
+  // 1. Fetch live data from Supabase
+  const [products, categories] = await Promise.all([
+    getProducts(),
+    getCategories()
+  ]);
+
+  // 2. Resolve Category ID from Slug if provided
+  const activeCategory = categories.find(c => c.slug === currentCategorySlug);
+  const activeCategoryId = activeCategory?.id;
+
+  // 3. Filter Products
+  const filteredProducts = activeCategoryId
+    ? products.filter((p: any) => p.category_id === activeCategoryId)
+    : products;
 
   const totalItems = filteredProducts.length;
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -39,12 +50,15 @@ export default async function ProductsPage({
       <Navbar />
       
       <main className="flex-1 bg-white text-black font-sans selection:bg-black/10">
-        {/* Decorative Hero Section - Subtler than the main hero */}
+        {/* Decorative Hero Section */}
         <div className="relative h-48 bg-linear-to-br from-pastel-green/20 via-white to-pastel-blue/20 border-b border-muted flex items-end">
           <div className="max-w-7xl mx-auto w-full px-6 pb-8">
             <nav className="text-xs text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2 font-bold">
               Home <ChevronDown className="-rotate-90 w-3 h-3" /> Catalog
             </nav>
+            <p className="text-[10px] font-black uppercase tracking-widest text-black/20 italic">
+               Universe / {activeCategory?.name || 'All Products'}
+            </p>
           </div>
         </div>
 
@@ -53,8 +67,8 @@ export default async function ProductsPage({
             {/* Sidebar Section */}
             <aside className="lg:w-70 shrink-0">
               <CategorySidebar 
-                categories={mockCategories} 
-                activeCategoryId={currentCategory} 
+                categories={categories as any} 
+                activeCategoryId={currentCategorySlug} 
                 baseUrl="/products" 
               />
             </aside>
@@ -64,7 +78,7 @@ export default async function ProductsPage({
               {/* Controls Header */}
               <div className="flex flex-col md:flex-row md:items-end justify-between border-b-4 border-black pb-8 gap-6">
                 <h1 className="text-5xl lg:text-7xl font-black italic tracking-tighter uppercase leading-none">
-                  Products <br /><span className="text-muted-foreground">Category</span>
+                  Products <br /><span className="text-muted-foreground">{activeCategory?.name || 'Category'}</span>
                 </h1>
                 
                 <div className="flex items-center gap-4">
@@ -78,13 +92,21 @@ export default async function ProductsPage({
 
               {/* Product Grid */}
               <div className="min-h-150">
-                <ProductGrid products={paginatedProducts} />
-                
-                <Pagination 
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  baseUrl="/products"
-                />
+                {paginatedProducts.length > 0 ? (
+                  <>
+                    <ProductGrid products={paginatedProducts as any} />
+                    <Pagination 
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      baseUrl="/products"
+                    />
+                  </>
+                ) : (
+                  <div className="h-96 flex flex-col items-center justify-center text-center space-y-4">
+                     <p className="text-4xl font-black italic uppercase text-muted-foreground opacity-20 tracking-tighter">No items found</p>
+                     <p className="text-sm font-bold uppercase text-muted-foreground italic">Check back later for new arrivals</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
