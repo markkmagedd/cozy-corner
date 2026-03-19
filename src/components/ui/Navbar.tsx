@@ -5,7 +5,6 @@ import { Search, ShoppingCart, User, ChevronDown, Menu } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { SlideOver } from "./SlideOver";
 import { Modal } from "./Modal";
-import Link from "next/link";
 
 export function Navbar() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -35,10 +34,10 @@ export function Navbar() {
         {/* Actions */}
         <div className="flex items-center gap-1 md:gap-4">
           <nav className="hidden lg:flex items-center gap-6 mr-4">
-            <Link href="/products" className="flex items-center gap-1 font-semibold cursor-pointer hover:text-muted-foreground transition-colors group">
+            <div className="flex items-center gap-1 font-semibold cursor-pointer hover:text-muted-foreground transition-colors group">
               Categories
               <ChevronDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
-            </Link>
+            </div>
             <span className="font-semibold cursor-pointer hover:text-muted-foreground transition-colors">Offers</span>
           </nav>
 
@@ -59,10 +58,7 @@ export function Navbar() {
             <span className="hidden md:inline">Login</span>
           </button>
 
-          <button 
-            className="lg:hidden p-2 md:p-3 hover:bg-muted rounded-2xl transition-all"
-            aria-label="Open Mobile Menu"
-          >
+          <button className="lg:hidden p-2 md:p-3 hover:bg-muted rounded-2xl transition-all">
             <Menu className="w-6 h-6" />
           </button>
         </div>

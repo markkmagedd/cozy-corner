@@ -1,95 +1,90 @@
-# Feature Specification: Products Page Layout
+# Feature Specification: Products Page Layout & Details Flow
 
-**Feature Branch**: `004-products-page-layout`  
-**Created**: 2026-03-19  
-**Status**: Draft  
-**Input**: User description: "I want the products page to be the same as the reference photo so that on the left is all the categories and I choose a category and the sub categories get shown beneath it and on the right the products that match this category I want you to implement the same design layout of the image"
+**Feature Branch**: `004-products-page-layout`
+**Created**: 2026-03-19
+**Status**: Draft
+**Input**: User description: "Design and build a products page that replicates the layout structure shown in the reference image..."
 
 ## Clarifications
 
 ### Session 2026-03-19
-- Q: How to handle large product lists? → A: Infinite scroll (manual) via a "Load More" button.
-- Q: What should the "Suggestions" button do? → A: Remove the suggestions button entirely.
-- Q: How should the categories be presented on mobile? → A: Left-side off-canvas drawer (hamburger menu).
-
+- Q: Product Grid Loading Mechanism → A: Standard Pagination (Numbered pages at the bottom)
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - View Products by Category (Priority: P1)
+### User Story 1 - Browse Product Hierarchy (Priority: P1)
 
-As a shopper, I want to select a category from a left sidebar, see its subcategories, and view matching products in a grid on the right, so I can easily browse the catalog.
+Users browse the product catalog using a hierarchical category sidebar to narrow down their search by navigating through nested subcategories.
 
-**Why this priority**: Core navigation functionality. Users must be able to explore products by category to find what they want to buy.
+**Why this priority**: Essential navigational structure for an e-commerce catalog; without this, users cannot discover products logically.
 
-**Independent Test**: Can be fully tested by clicking a category in the sidebar, verifying subcategories expand, and confirming the product grid populates with relevant items.
-
-**Acceptance Scenarios**:
-
-1. **Given** the user is on the products page, **When** they click "All Categories" or a specific category in the left sidebar, **Then** the main product grid updates to show items in that category.
-2. **Given** a category with subcategories, **When** the user clicks the category name, **Then** the subcategories expand beneath it, and the grid updates to show products from the parent category.
-3. **Given** an expanded category, **When** the user clicks a subcategory, **Then** the product grid refines to show only items matching that subcategory.
-
----
-
-### User Story 2 - Interact with Product Cards (Priority: P2)
-
-As a shopper, I want to see product details (image, title, price, badges) and be able to quickly add items to my cart or favorites from the grid view.
-
-**Why this priority**: Reduces friction in the shopping experience by allowing rapid add-to-cart and comparison directly from the list view.
-
-**Independent Test**: Can be tested independently by loading a static list of products in the grid and interacting with the favorite/cart buttons.
+**Independent Test**: Can be independently tested by rendering the category tree and verifying that clicking a category updates the displayed product list and active state.
 
 **Acceptance Scenarios**:
 
-1. **Given** a product in the grid, **When** the user views the card, **Then** they can clearly see the product image, title, current price, old price (if on sale), and any relevant badges (e.g., "offer").
-2. **Given** a product card, **When** the user clicks the "favorite" (heart) button, **Then** the item is added to their favorites.
-3. **Given** a product card, **When** the user clicks the "add to cart" button, **Then** the item is added to their shopping cart.
+1. **Given** the user lands on the products page, **When** they view the left sidebar, **Then** a multi-level category hierarchy is displayed.
+2. **Given** a visible category with nested subcategories, **When** the user clicks the category, **Then** the product grid filters to show items in that category and subcategories.
 
 ---
 
-### User Story 3 - Search and Sort Products (Priority: P3)
+### User Story 2 - View Product Grid (Priority: P1)
 
-As a shopper, I want to sort the product grid and use search/suggestion tools to quickly find specific items.
+Users view a structured grid of products based on the active category showing necessary top-level details (image, title, price).
 
-**Why this priority**: Enhances findability for users who know what they want or have specific criteria (like sorting by price).
+**Why this priority**: Displaying the products matching the criteria is the core purpose of the page.
 
-**Independent Test**: Can be tested independently by selecting sorting options and observing the grid reorder according to the chosen criteria.
+**Independent Test**: Can be tested with mock product data explicitly checking the layout structure and that "suggestions" / "find product" buttons are absent.
 
 **Acceptance Scenarios**:
 
-1. **Given** a list of products, **When** the user clicks the "sort" dropdown and selects an option, **Then** the products in the grid reorder accordingly.
-2. **Given** the top action bar, **When** the user clicks "find product", **Then** a search interface is presented or focused.
+1. **Given** a selected category with products, **When** the user views the grid, **Then** products render in a responsive, up to 3-column layout matching the project's visual style.
+2. **Given** any product card in the grid, **When** the user inspects it, **Then** it clearly shows the product image, title, and price.
 
 ---
+
+### User Story 3 - View Product Details (Priority: P2)
+
+Users click on a specific product from the grid to navigate to a dedicated detail page that exposes deeper attributes like available sizes.
+
+**Why this priority**: Enables the next step in the conversion funnel (towards adding to cart).
+
+**Independent Test**: Can be independently verified by ensuring the product card links correctly to a complete detail view.
+
+**Acceptance Scenarios**:
+
+1. **Given** a product card in the grid, **When** the user clicks the card, **Then** they navigate to the product's dedicated detail page.
+2. **Given** the product details page, **When** the user views the page, **Then** they see the complete product information, sizing options, and other relevant attributes styled consistently with the project.
 
 ### Edge Cases
 
-- What happens when a selected category has no products associated with it? (Should show a friendly empty state)
-- What happens if product titles are extremely long? (Should truncate with ellipsis across a fixed number of lines as shown in reference)
+- What happens when a selected category has no products associated with it? (System displays a user-friendly "No products found in this category" default message)
+- How does the system handle fetching deep subcategories spanning multiple levels? (Non-active trees are collapsed to maintain readability)
+- How does the system handle products missing certain attributes like images or sizes? (Displays a placeholder image or indicates "Out of Stock" / generic default size depending on item type)
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: System MUST display a persistent left sidebar containing a hierarchical list of categories and subcategories.
-- **FR-002**: System MUST allow categories with subcategories to expand and collapse upon interaction.
-- **FR-003**: System MUST display a primary content area on the right containing a responsive grid of products matching the current category selection.
-- **FR-004**: System MUST render individual product cards containing: Product Image, Title, Current Price, Original (Strikethrough) Price, Promotional Badges (e.g., "offer"), Favorite Button, and Add to Cart Button.
-- **FR-005**: System MUST provide a top action bar in the primary content area with controls for "Sort" and "Find product".
-- **FR-006**: System MUST implement a dark-themed visual design matching the reference image, including specific highlight/accent colors (e.g., amber/yellow for active elements and prices).
-- **FR-007**: System MUST provide a responsive layout mechanism for mobile/tablet screens where the sidebar is hidden behind a left-aligned off-canvas drawer accessed via a "hamburger" menu icon.
-- **FR-008**: System MUST implement manual infinite scroll on the product grid by displaying a "Load More" button when the category contains more products than the initial loaded batch.
+- **FR-001**: System MUST display a left-aligned sidebar containing the catalog's category hierarchy, including nested subcategories.
+- **FR-002**: System MUST dynamically filter the product grid display based on the currently selected category or subcategory.
+- **FR-003**: System MUST render filtered products in a responsive grid layout, constrained to a maximum of 3 columns on standard desktop viewports.
+- **FR-004**: System MUST ensure each product card explicitly displays a product image, title, and price.
+- **FR-005**: System MUST omit "suggestions" and "find product" header buttons from the layout referenced.
+- **FR-006**: System MUST make entire product cards clickable targets that navigate the user to a dedicated product details route.
+- **FR-007**: System MUST provide a product details page outlining complete product information, including available sizes and secondary attributes.
+- **FR-008**: System MUST apply the project's existing design system for all typographical, color, and component spacing decisions without deviation.
+- **FR-009**: System MUST paginate the product grid with numbered pages at the bottom when products exceed the initial load limit.
 
-### Key Entities 
+### Key Entities *(include if feature involves data)*
 
-- **Category**: Represents a product grouping. Attributes: ID, Name, ParentCategoryID (optional, for nested subcategories).
-- **Product**: Represents a purchasable item. Attributes: ID, Title, ImageURL, CurrentPrice, OriginalPrice, CategoryIDs, BadgeTypes.
+- **Category**: A hierarchical catalog node containing a name, parent reference, and nested children. 
+- **Product**: An item for sale featuring an image, title, price, description, and available sizes.
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
-- **SC-001**: Users can successfully filter by category and find products within 3 clicks.
-- **SC-002**: Product grid layout remains structurally intact and uniform regardless of product title length variations.
-- **SC-003**: Layout effortlessly adapts to mobile viewports without horizontal scrolling or overlapping elements.
-- **SC-004**: Interaction with sidebar categories updates the product grid within 500 milliseconds (assuming network/data availability) to ensure a snappy browsing experience.
+- **SC-001**: 100% of product grid views accurately display products according to the active category sidebar filter.
+- **SC-002**: Product cards explicitly present the image, title, and price within a 3-column maximum desktop layout template without visual breakage across devices.
+- **SC-003**: 100% of clicks on a product card successfully transition to a dedicated product details page.
+- **SC-004**: The resulting UI components strictly adhere to existing project design tokens (colors, fonts).

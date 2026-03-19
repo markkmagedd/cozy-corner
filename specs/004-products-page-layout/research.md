@@ -1,14 +1,13 @@
-# Research: Products Page Layout
+# Phase 0: Outline & Research
 
-## 1. Data Fetching for Infinite Scroll (Load More)
-**Decision**: Use React Server Actions combined with a Client Component managing the loaded items state.
-**Rationale**: Next.js 15 App Router strongly encourages Server Actions for data fetching and mutations. By passing initial data from a Server Component to a Client Component, and having the "Load More" button trigger a Server Action that fetches the next page/offset, we avoid needing extra API route overhead, while retaining high performance and hydration efficiency.
-**Alternatives considered**: 
-- *SWR / React Query*: Excessive for a simple manual load more button if no complex caching across multiple views is needed.
-- *API Route Handlers*: Requires extra boilerplate compared to direct Server Actions.
-- *URL Search Params Pagination*: Standard, but user requested manual "Load More" without losing scroll position, which is smoother via state append than a full page navigation (though Next.js handles soft navigation, appending items strictly on the client is visually simpler for infinite scroll).
+## Next.js 15 App Router - URL State vs React State
 
-## 2. Off-Canvas Drawer (Hamburger Menu) Implementation
-**Decision**: Use Framer Motion for the slide-in animation and native React state for the toggle. Focus management using standard accessible dialog patterns.
-**Rationale**: The constitution specifies Framer Motion for animations. It yields the smoothest 60fps animations for mobile drawers. 
-**Alternatives considered**: CSS-only transitions. Rejected because Framer Motion handles unmounting/mounting gracefully with `<AnimatePresence>`, avoiding messy CSS `display: none` timeouts.
+- **Decision**: Use URL Search Params (`?category=id&page=2`) for pagination and category filtering.
+- **Rationale**: URL state allows the page to be shareable, bookmarkable, and naturally supports standard browser back/forward navigation. Next.js App Router elegantly consumes `searchParams` in Page Server Components, enabling performant data fetching directly on the server without client round-trips.
+- **Alternatives considered**: `useState` + `useEffect` fetching client-side (Rejected: inferior SEO, slower initial paint, breaks back button). Context API (Rejected: overkill for simple list variations).
+
+## Layout Animation - Framer Motion
+
+- **Decision**: Add a lightweight fade-in stagger motion to the `ProductGrid` and `ProductCard`.
+- **Rationale**: Meets the Constitution's "Premium Aesthetics" principle without negatively impacting load times. 
+- **Alternatives considered**: CSS-only transitions (Rejected: less flexible for staggered grid mounting logic).

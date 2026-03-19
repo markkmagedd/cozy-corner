@@ -1,95 +1,111 @@
-# Tasks: Products Page Layout
+# Tasks: Products Page Layout & Details Flow
 
 **Input**: Design documents from `/specs/004-products-page-layout/`
-**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
+**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/
 
 ## Phase 1: Setup (Shared Infrastructure)
-**Purpose**: Project initialization and basic structure
 
-- [x] T001 Initialize Framer Motion and Lucide React UI dependencies in `package.json` configurations
-- [x] T002 [P] Create `src/types/product.ts` and define `Category` and `Product` types based on data model
-- [x] T003 [P] Add `CategorySidebarProps` and `ProductCardProps` interface definitions in `src/types/product.ts`
+**Purpose**: Project directories initialization for the feature.
+
+- [X] T001 Create route directories `src/app/products/[productId]`
+- [X] T002 [P] Create components directories `src/components/layout` and `src/components/products`
+- [X] T003 [P] Create types directory `src/types`
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
-**Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented
-**⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [x] T004 Setup database schema mappings and mock data payloads for products and categories in `src/lib/data-mock.ts`
-- [x] T005 [P] Setup base file `src/app/(store)/products/page.tsx` integrating site header/footer
-- [x] T006 [P] Setup base file `src/app/(store)/products/loading.tsx` for layout suspense fallbacks
-- [x] T007 Build `src/lib/actions/product-actions.ts` boilerplate with Next.js 15 Server Actions
+**Purpose**: Core data models and types that MUST be complete before ANY user story can be implemented.
 
-**Checkpoint**: Foundation ready - user story implementation can now begin
+- [X] T004 Define shared interfaces (`Category`, `Product`, `PaginatedResponse`) matching data model in `src/types/product.ts`
+
+**Checkpoint**: Foundation ready - user story implementation can now begin.
 
 ---
 
-## Phase 3: User Story 1 - View Products by Category (Priority: P1) 🎯 MVP
-**Goal**: Display hierarchical category sidebar and the responsive grid of corresponding products. Includes off-canvas mobile drawer.
-**Independent Test**: Can be fully tested by clicking a category in the sidebar, verifying subcategories expand, and confirming the product grid populates with relevant items.
+## Phase 3: User Story 1 - Browse Product Hierarchy (Priority: P1) 🎯 MVP
+
+**Goal**: Users browse the product catalog using a hierarchical category sidebar to narrow down their search by navigating through nested subcategories.
+
+**Independent Test**: The sidebar renders the category hierarchy and updates the URL `?category=` parameter upon selection.
 
 ### Implementation for User Story 1
-- [x] T008 [P] [US1] Create `src/components/navigation/CategorySidebar.tsx` incorporating subcategory toggle logic
-- [x] T009 [P] [US1] Create `src/components/navigation/MobileDrawer.tsx` utilizing Framer Motion slide-in
-- [x] T010 [US1] Build `src/components/products/ProductGrid.tsx` for responsive dynamic column display
-- [x] T011 [US1] Wire up `src/components/navigation/CategorySidebar.tsx` and `MobileDrawer.tsx` to `src/app/(store)/products/page.tsx` layout
-- [x] T012 [US1] Implement Server Action `fetchProductsByCategory()` inside `src/lib/actions/product-actions.ts`
 
-**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently.
+- [X] T005 [US1] Create `CategorySidebar` component matching UI prop contracts in `src/components/layout/CategorySidebar.tsx`
+- [X] T006 [US1] Implement basic `/products` layout bringing in `CategorySidebar` handling URL state in `src/app/products/page.tsx`
+
+**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently with URL state updating.
 
 ---
 
-## Phase 4: User Story 2 - Interact with Product Cards (Priority: P2)
-**Goal**: Detailed product views and quick actions (Favorite/Add to Cart) on item cards.
-**Independent Test**: Can be tested independently by loading a static list of products in the grid and interacting with the buttons.
+## Phase 4: User Story 2 - View Product Grid (Priority: P1)
+
+**Goal**: Users view a structured grid of products based on the active category showing necessary top-level details (image, title, price).
+
+**Independent Test**: The grid successfully renders product cards and standard pagination updates `?page=` when clicked.
 
 ### Implementation for User Story 2
-- [x] T013 [P] [US2] Build `src/components/products/ProductCard.tsx` parsing image, title, and current/original prices
-- [x] T014 [US2] Implement heart icon favorite toggling UI and add-to-cart handlers in `src/components/products/ProductCard.tsx`
-- [x] T015 [US2] Update `src/components/products/ProductGrid.tsx` to mount `ProductCard.tsx` for each item
-- [x] T016 [US2] Implement `src/components/products/LoadMoreButton.tsx` logic passing offset cursors for the product grid
 
-**Checkpoint**: At this point, User Stories 1 AND 2 should both work independently.
+- [X] T007 [P] [US2] Create responsive `ProductCard` component with image, title, price in `src/components/products/ProductCard.tsx`
+- [X] T008 [P] [US2] Create `Pagination` component utilizing URL Search Params in `src/components/products/Pagination.tsx`
+- [X] T009 [US2] Create `ProductGrid` component utilizing `ProductCard` and Framer Motion stagger in `src/components/products/ProductGrid.tsx` (depends on T007)
+- [X] T010 [US2] Integrate `ProductGrid` and `Pagination` into `src/app/products/page.tsx` to handle `?category` and `?page` fetching and display (depends on T008, T009)
+
+**Checkpoint**: At this point, User Stories 1 AND 2 should both work independently to provide a robust filtering grid.
 
 ---
 
-## Phase 5: User Story 3 - Search and Sort Products (Priority: P3)
-**Goal**: Sort dropdown and "Find product" layout actions above the grid.
-**Independent Test**: Can be tested independently by selecting sorting options and observing the grid reorder according to the chosen criteria.
+## Phase 5: User Story 3 - View Product Details (Priority: P2)
+
+**Goal**: Users click on a specific product from the grid to navigate to a dedicated detail page that exposes deeper attributes like available sizes.
+
+**Independent Test**: Direct linking to `/products/[productId]` renders the full product details.
 
 ### Implementation for User Story 3
-- [x] T017 [P] [US3] Create `src/components/products/TopActionBar.tsx` with Sort dropdown and Find Product trigger
-- [x] T018 [US3] Update `src/app/(store)/products/ProductsPageClient.tsx` to place `TopActionBar.tsx` above `ProductGrid.tsx`
-- [x] T019 [US3] Add sorting and search parameter handling to `fetchProductsByCategory()` in `src/lib/actions/product-actions.ts`
 
-**Checkpoint**: All user stories should now be independently functional.
+- [X] T011 [P] [US3] Create `ProductDetails` component showing complete product fields in `src/components/products/ProductDetails.tsx`
+- [X] T012 [US3] Implement `/products/[productId]/page.tsx` rendering the `ProductDetails` component (depends on T011)
+- [X] T013 [US3] Update `ProductCard` in `src/components/products/ProductCard.tsx` to wrap the card in a Next.js `<Link>` pointing to `/products/${product.id}`
+
+**Checkpoint**: All user stories should now be independently functional, forming a complete e-commerce flow.
 
 ---
 
-## Phase N: Polish & Cross-Cutting Concerns
-**Purpose**: Improvements that affect multiple user stories
+## Phase 6: Polish & Cross-Cutting Concerns
 
-- [x] T020 Run `quickstart.md` validation steps across desktop and mobile breakpoints manually
-- [x] T021 [P] Ensure dark mode Tailwind color system is consistently using uniform tokens (`amber-400`/`yellow-500` accents)
-- [x] T022 Code cleanup, removing console statements, optimizing Framer Motion layout IDs
+**Purpose**: Improvements ensuring UI polish and constitutional alignment.
+
+- [X] T014 Review responsive behavior on mobile viewports for Sidebar and Grid sizing adjustments.
+- [X] T015 Verify Framer Motion layout animations don't introduce lag or accessibility issues for `ProductGrid`.
 
 ---
 
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
-- **Setup (Phase 1)**: No dependencies - can start immediately
-- **Foundational (Phase 2)**: Depends on Setup completion
-- **User Stories (Phase 3+)**: All depend on Foundational phase completion
-- **Polish (Final Phase)**: Depends on all user stories passing checks
+
+- **Setup (Phase 1)**: No dependencies - can start immediately.
+- **Foundational (Phase 2)**: Depends on Setup completion.
+- **User Stories (Phase 3+)**: All depend on Foundational phase completion. User Story 2 builds upon User Story 1's skeleton. User Story 3 builds upon User Story 2's cards.
+- **Polish (Final Phase)**: Depends on all desired user stories being complete.
 
 ### User Story Dependencies
-- **User Story 1 (P1)**: No dependencies on other stories
-- **User Story 2 (P2)**: Extends US1 layout framework
-- **User Story 3 (P3)**: Depends on US2 structure for sorting display
+
+- **User Story 1 (P1)**: Can start after Foundational (Phase 2).
+- **User Story 2 (P1)**: Highly parallelizable but expects `page.tsx` from US1.
+- **User Story 3 (P2)**: Can be built completely in parallel and integrated last.
 
 ### Parallel Opportunities
-- Mock data schema (T004) and type definitions (T002, T003)
-- `CategorySidebar` (T008) and `MobileDrawer` (T009) can be styled by different developers simultaneously
-- `ProductCard` UI (T013) can be built in isolation using Storybook or static mock data.
+
+- T002 and T003 can be executed simultaneously.
+- T007 (Card) and T008 (Pagination) can be authored entirely in parallel.
+- T011 (Detail Component) can be authored while U1 and US2 are in progress.
+
+## Implementation Strategy
+
+### Incremental Delivery
+
+1. Setup routing directories and types definitions.
+2. Build the visual Sidebar and mock the active route switching (US1 MVP).
+3. Author the Grid view, Cards, and Pagination then wire them to the active route SearchParams (US2).
+4. Build the separate Details route to complete the navigation funnel (US3).

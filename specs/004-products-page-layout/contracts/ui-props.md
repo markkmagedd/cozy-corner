@@ -1,33 +1,34 @@
-# Contracts: UI Component Interfaces
+# Interface Contracts: UI Components
 
-## `ProductCardProps`
+## Category sidebar filtering
 ```typescript
-interface ProductCardProps {
-  id: string;
-  title: string;
-  image: string;
-  currentPrice: number;
-  originalPrice?: number;
-  badges?: string[];
-  isFavorite: boolean;
-  onToggleFavorite: (id: string) => void;
-  onAddToCart: (id: string) => void;
-}
-```
-
-## `CategorySidebarProps`
-```typescript
-interface Category {
-  id: string;
-  name: string;
-  subcategories?: Category[];
-}
-
 interface CategorySidebarProps {
   categories: Category[];
   activeCategoryId?: string;
-  onSelectCategory: (id: string) => void;
-  isMobileDrawer?: boolean;
-  onCloseDrawer?: () => void;
+  baseUrl: string; // The URL prefix to append query params to
+}
+```
+
+## Configurable Product List
+```typescript
+interface ProductGridProps {
+  products: Product[];
+  emptyStateMessage?: string;
+}
+```
+
+## Singular Output Frame
+```typescript
+interface ProductCardProps {
+  product: Product;
+}
+```
+
+## Standard Pagination Control
+```typescript
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  baseUrl: string;
 }
 ```

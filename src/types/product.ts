@@ -1,31 +1,25 @@
 export interface Category {
   id: string;
   name: string;
-  parentCategoryId?: string;
-  slug: string;
-  subcategories?: Category[];
+  parentId?: string | null;
+  subcategories?: Category[]; // Optionally populated for tree structures
 }
 
 export interface Product {
   id: string;
   title: string;
-  image: string;
-  currentPrice: number;
-  originalPrice?: number;
-  badges?: string[];
-  categoryIds: string[];
-  isFavorite: boolean;
+  description: string;
+  price: number;
+  originalPrice?: number; // Optional: For sale items to calculate discount
+  imageUrl: string;
+  categoryId: string;
+  sizes: string[];
+  inStock: boolean;
 }
 
-export interface CategorySidebarProps {
-  categories: Category[];
-  activeCategoryId?: string;
-  onSelectCategory: (id: string) => void;
-  isMobileDrawer?: boolean;
-  onCloseDrawer?: () => void;
-}
-
-export interface ProductCardProps extends Product {
-  onToggleFavorite: (id: string) => void;
-  onAddToCart: (id: string) => void;
+export interface PaginatedResponse<T> {
+  data: T[];
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
 }

@@ -1,29 +1,33 @@
-# Implementation Plan: Products Page Layout
+# Implementation Plan: Products Page Layout & Details Flow
 
 **Branch**: `004-products-page-layout` | **Date**: 2026-03-19 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/004-products-page-layout/spec.md`
 
 ## Summary
-Implement a modern, dark-themed responsive products page featuring a hierarchical category sidebar, a product grid with detailed item cards, and a manual infinite scroll ("Load More") capability. On mobile, the sidebar adapts to an off-canvas slide-in drawer.
+
+Design and build a fully responsive products page and product details flow mimicking the structure of the provided layout reference while strictly adhering to the project's Next.js 15 + Tailwind 4 UI design system.
 
 ## Technical Context
 
-**Language/Version**: TypeScript 5+
-**Primary Dependencies**: Next.js 15.x (App Router), TailwindCSS 4, Framer Motion, Lucide React
-**Testing**: ESLint, TS Compiler (strict mode)
-**Target Platform**: Modern Web Browsers (Mobile & Desktop)
-**Project Type**: Next.js Web Application
-**Performance Goals**: 60fps drawer animations, <500ms data updates on category switch
+**Language/Version**: TypeScript 5.x 
+**Primary Dependencies**: Next.js 15.x (App Router), React 19, TailwindCSS 4, Framer Motion, Lucide React
+**Storage**: N/A (Mock/Client Data initially, preparing for API integration)
+**Testing**: Jest / React Testing Library
+**Target Platform**: Web Browsers (Mobile-first responsive up to desktop)
+**Project Type**: Frontend Application Feature
+**Performance Goals**: Fast LCP (Next.js Image), instant visual feedback.
+**Constraints**: Tailwind for all styling. 3-column max desktop grid. Standard pagination.
+**Scale/Scope**: Dozens of categories, hundreds of products displaying via pagination.
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- [x] **Component-First Architecture**: Feature relies on atomic compositions (`ProductCard`, `Sidebar`, `CategoryItem`).
-- [x] **Responsive Design**: Tailwind classes (`md:block`, `hidden`) and Framer Motion drawer handle mobile vs desktop layout natively.
-- [x] **Static Typing**: Interfaces strictly defined in `contracts/ui-props.md`.
-- [x] **Declarative State & Effects**: Data fetching uses Next.js 15 Server Actions; client components (`"use client"`) are pushed to the tree leaves (e.g., `ProductGridClient`, `MobileDrawerProvider`).
-- [x] **Premium Aesthetics**: Dark mode, Framer Motion slide-ins, and accurate strikethroughs/badges included.
+- Component-First Architecture: **PASS** (Broken down into atomic components)
+- Responsive Design: **PASS** (Tailwind responsive prefixes for fluid grid)
+- Static Typing: **PASS** (Strict interfaces defined in Phase 1)
+- Declarative State & Effects: **PASS** (Leveraging URL Search Params for state)
+- Premium Aesthetics: **PASS** (Lucide icons, Framer Motion layouts)
 
 ## Project Structure
 
@@ -31,41 +35,33 @@ Implement a modern, dark-themed responsive products page featuring a hierarchica
 
 ```text
 specs/004-products-page-layout/
-├── plan.md
-├── research.md
-├── data-model.md
-├── quickstart.md
-└── contracts/
-    └── ui-props.md
+├── plan.md              # This file
+├── research.md          # Phase 0 output
+├── data-model.md        # Phase 1 output
+├── contracts/           
+│   └── ui-props.md      # UI Integration Contracts
+└── tasks.md             # (To be created)
 ```
 
-### Source Code
+### Source Code (repository root)
 
 ```text
 src/
 ├── app/
-│   └── (store)/
-│       └── products/
-│           ├── page.tsx
-│           └── loading.tsx
-├── components/
 │   ├── products/
-│   │   ├── ProductCard.tsx
+│   │   ├── page.tsx
+│   │   └── [productId]/
+│   │       └── page.tsx
+├── components/
+│   ├── layout/
+│   │   └── CategorySidebar.tsx
+│   ├── products/
 │   │   ├── ProductGrid.tsx
-│   │   ├── LoadMoreButton.tsx
-│   │   └── TopActionBar.tsx
-│   └── navigation/
-│       ├── CategorySidebar.tsx
-│       └── MobileDrawer.tsx
-├── lib/
-│   └── actions/
-│       └── product-actions.ts    # Server actions for load-more/filtering
+│   │   ├── ProductCard.tsx
+│   │   ├── Pagination.tsx
+│   │   └── ProductDetails.tsx
 └── types/
     └── product.ts
 ```
 
-**Structure Decision**: A standard Next.js App Router structure grouped by UI domains (`products` and `navigation`) in the `components` folder, with Server Actions segregated into `lib/actions`.
-
-## Complexity Tracking
-
-> No constitution violations detected. Complexity is justified as standard Next.js App Router paradigms are sufficient.
+**Structure Decision**: Using Next.js App Router paradigm. Route `/products` for listing, `/products/[productId]` for details. URL SearchParams will govern the active category and pagination to enable server-side fetching and robust deep-linking.

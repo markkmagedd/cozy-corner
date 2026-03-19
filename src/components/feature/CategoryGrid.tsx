@@ -1,6 +1,5 @@
 import { Category } from "@/src/types";
 import { CategoryCard } from "./CategoryCard";
-import Link from "next/link";
 
 interface CategoryGridProps {
   categories: Category[];
@@ -18,11 +17,9 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
             Everything you need for your active lifestyle from curated boutiques.
           </p>
         </div>
-        <Link href="/products">
-          <button className="px-8 py-4 border-2 border-black rounded-2xl font-bold hover:bg-black hover:text-white transition-all uppercase italic text-sm">
-            View all 48 Categories
-          </button>
-        </Link>
+        <button className="px-8 py-4 border-2 border-black rounded-2xl font-bold hover:bg-black hover:text-white transition-all uppercase italic text-sm">
+          View all 48 Categories
+        </button>
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
