@@ -114,9 +114,9 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T021 [P] Ensure responsive layouts work up to Desktop/Tablet standard width 
-- [ ] T022 [P] Extract reusable Tailwind tokens for colors/spacing in tailwind.config.ts if necessary
-- [ ] T023 Run complete app walkthrough checking edge cases (empty states)
+- [X] T021 [P] Ensure responsive layouts work up to Desktop/Tablet standard width 
+- [X] T022 [P] Extract reusable Tailwind tokens for colors/spacing in tailwind.config.ts if necessary
+- [X] T023 Run complete app walkthrough checking edge cases (empty states)
 
 ---
 
