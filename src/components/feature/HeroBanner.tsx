@@ -2,6 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { cn } from "@/src/lib/utils";
 
 interface HeroBannerProps {
@@ -13,7 +14,7 @@ interface HeroBannerProps {
 
 export function HeroBanner({ headline, tagline, ctaText, ctaLink }: HeroBannerProps) {
   return (
-    <section className="relative h-[600px] lg:h-[800px] w-full overflow-hidden bg-muted rounded-bl-3xl rounded-br-3xl flex flex-col justify-center items-center text-center p-6 lg:p-12 mb-20 bg-gradient-to-br from-pastel-green/50 via-white to-pastel-blue/30">
+    <section className="relative h-150 lg:h-200 w-full overflow-hidden bg-muted rounded-bl-3xl rounded-br-3xl flex flex-col justify-center items-center text-center p-6 lg:p-12 mb-20 bg-linear-to-br from-pastel-green/50 via-white to-pastel-blue/30">
       <div className="absolute top-0 right-0 h-full w-2/3 bg-black/5 -skew-x-12 translate-x-1/2 blur-2xl" />
       
       <motion.div
@@ -30,14 +31,16 @@ export function HeroBanner({ headline, tagline, ctaText, ctaLink }: HeroBannerPr
           {tagline}
         </p>
         
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-black text-white px-10 py-5 rounded-3xl font-black text-xl uppercase italic group flex items-center gap-4 mx-auto shadow-2xl"
-        >
-          {ctaText}
-          <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-        </motion.button>
+        <Link href="/products">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-black text-white px-10 py-5 rounded-3xl font-black text-xl uppercase italic group flex items-center gap-4 mx-auto shadow-2xl"
+          >
+            {ctaText}
+            <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+          </motion.button>
+        </Link>
       </motion.div>
       
       {/* Visual floating elements */}
