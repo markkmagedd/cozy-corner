@@ -3,10 +3,11 @@ import { ProductForm } from '@/components/admin/ProductForm'
 import { updateProduct } from '@/lib/actions/product-actions'
 import { notFound } from 'next/navigation'
 
-export default async function EditProductPage({ params }: { params: { id: string } }) {
+export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params
   const [product, categories] = await Promise.all([
     prisma.product.findUnique({ 
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       include: { 
         variants: true,
         images: {

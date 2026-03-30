@@ -3,7 +3,9 @@ import { Navbar } from "@/components/storefront/Navbar"
 import { Footer } from "@/components/storefront/Footer"
 import { HeroSection } from "@/components/storefront/HeroSection"
 import { ProductGrid } from "@/components/storefront/ProductGrid"
-import { FilterSidebar } from "@/components/storefront/FilterSidebar"
+import { FeaturedCategories } from "@/components/storefront/FeaturedCategories"
+import { PromoBanner } from "@/components/storefront/PromoBanner"
+import { NewsletterSignup } from "@/components/storefront/NewsletterSignup"
 import { Pagination } from "@/components/storefront/Pagination"
 import prisma from "@/lib/prisma"
 
@@ -48,7 +50,7 @@ export default async function HomePage({ searchParams }: PageProps) {
     ]
   }
 
-  const [productsData, total] = await Promise.all([
+  const [productsData, total, featuredCategories] = await Promise.all([
     prisma.product.findMany({
       where,
       orderBy: { createdAt: 'desc' },
@@ -60,6 +62,11 @@ export default async function HomePage({ searchParams }: PageProps) {
       },
     }),
     prisma.product.count({ where }),
+    prisma.category.findMany({
+      where: { isFeatured: true },
+      orderBy: { displayOrder: 'asc' },
+      select: { id: true, name: true, slug: true },
+    }),
   ])
 
   const formattedProducts = productsData.map((p: any) => {
@@ -106,15 +113,19 @@ export default async function HomePage({ searchParams }: PageProps) {
             </div>
           )}
 
-          <div className="flex flex-col md:flex-row gap-8">
-            <FilterSidebar />
-            
-            <div className="flex-1">
-              <ProductGrid products={formattedProducts} />
-              <Pagination totalPages={totalPages} />
-            </div>
+          <div className="w-full">
+            <ProductGrid products={formattedProducts} />
+            <Pagination totalPages={totalPages} />
           </div>
         </div>
+
+        {!searchQuery && !brandParam && !minPriceParam && !maxPriceParam && page === 1 && (
+          <>
+            <FeaturedCategories categories={featuredCategories} />
+            <PromoBanner />
+            <NewsletterSignup />
+          </>
+        )}
       </main>
       <Footer />
     </div>

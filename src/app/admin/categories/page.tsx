@@ -6,10 +6,11 @@ export const dynamic = 'force-dynamic'
 export default async function CategoriesPage({
   searchParams,
 }: {
-  searchParams: { q?: string; page?: string }
+  searchParams: Promise<{ q?: string; page?: string }>
 }) {
-  const query = searchParams.q || ''
-  const page = parseInt(searchParams.page || '1', 10)
+  const resolvedParams = await searchParams
+  const query = resolvedParams.q || ''
+  const page = parseInt(resolvedParams.page || '1', 10)
   const limit = 10
   const skip = (page - 1) * limit
 

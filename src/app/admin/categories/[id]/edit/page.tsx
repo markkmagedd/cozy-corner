@@ -3,9 +3,10 @@ import { CategoryForm } from '@/components/admin/CategoryForm'
 import { updateCategory } from '@/lib/actions/category-actions'
 import { notFound } from 'next/navigation'
 
-export default async function EditCategoryPage({ params }: { params: { id: string } }) {
+export default async function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params
   const [category, categories] = await Promise.all([
-    prisma.category.findUnique({ where: { id: params.id } }),
+    prisma.category.findUnique({ where: { id: resolvedParams.id } }),
     prisma.category.findMany({ orderBy: { name: 'asc' } }),
   ])
 

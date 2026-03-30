@@ -29,7 +29,7 @@ export function MegaMenu() {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full w-screen max-w-2xl translate-x-[-100px] bg-white border border-slate-200 shadow-xl rounded-b-lg overflow-hidden">
+        <div className="absolute left-0 top-full w-screen max-w-2xl -translate-x-25 bg-white border border-slate-200 shadow-xl rounded-b-lg overflow-hidden">
           <div className="grid grid-cols-2 p-6 gap-8">
             <div>
               <h3 className="font-serif text-lg font-bold mb-4 border-b pb-2">All Categories</h3>
@@ -53,6 +53,11 @@ export function MegaMenu() {
                   </li>
                 ))}
               </ul>
+              <div className="mt-8 pt-4 border-t border-slate-100">
+                <Link href="/categories" className="text-sm font-semibold text-accent hover:border-b hover:border-accent pb-1 transition-all">
+                  View All Categories →
+                </Link>
+              </div>
             </div>
             
             <div className="bg-slate-50 p-6 -m-6 rounded-r-lg">
