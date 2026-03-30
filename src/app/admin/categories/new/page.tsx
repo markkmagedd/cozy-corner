@@ -2,6 +2,8 @@ import prisma from '@/lib/prisma'
 import { CategoryForm } from '@/components/admin/CategoryForm'
 import { createCategory } from '@/lib/actions/category-actions'
 
+export const dynamic = 'force-dynamic'
+
 export default async function NewCategoryPage() {
   const categories = await prisma.category.findMany({
     orderBy: { name: 'asc' },

@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: 'Manage products and categories for Cozy Corner Store.',
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function AdminLayout({
   children,
 }: {

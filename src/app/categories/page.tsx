@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: "Explore our curated collections of premium clothing and equipment.",
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function CategoriesPage() {
   // Fetch top-level categories and include the first product's primary image
   const categoriesData = await prisma.category.findMany({
