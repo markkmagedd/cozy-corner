@@ -192,3 +192,27 @@ export async function toggleProductActive(id: string): Promise<ActionResult<{ is
      return { success: false, error: 'Failed to toggle product status' }
   }
 }
+
+export async function getProductBySlug(slug: string) {
+  try {
+    const product = await prisma.product.findUnique({
+      where: { slug },
+      include: {
+        variants: true,
+        images: {
+          orderBy: { displayOrder: 'asc' },
+        },
+        category: true,
+      },
+    })
+
+    if (!product || !product.isActive) {
+      return null
+    }
+
+    return product
+  } catch (error) {
+    console.error(`Failed to fetch product with slug ${slug}:`, error)
+    return null
+  }
+}
