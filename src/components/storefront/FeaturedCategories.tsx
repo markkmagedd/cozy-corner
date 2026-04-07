@@ -5,6 +5,7 @@ interface Category {
   id: string
   name: string
   slug: string
+  imageUrl?: string | null    // ✅ Added
 }
 
 interface FeaturedCategoriesProps {
@@ -31,7 +32,16 @@ export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
               href={`/category/${category.slug}`}
               className="group relative h-80 overflow-hidden rounded-xl bg-slate-200"
             >
-              {/* Fallback pattern until we have category images */}
+              {/* ✅ Show category image */}
+              {category.imageUrl && (
+                <Image
+                  src={category.imageUrl}
+                  alt={category.name}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              )}
+
               <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/60 group-hover:to-black/70 transition-colors" />
               <div className="absolute inset-0 flex flex-col items-center justify-end p-8 text-center">
                 <h3 className="text-xl font-bold text-white mb-2 transform group-hover:-translate-y-1 transition-transform">

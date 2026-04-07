@@ -90,7 +90,7 @@ export function ProductForm({ initialData, categories, action }: ProductFormProp
 
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1" htmlFor="price">
-              Price (USD) *
+              Price (EUR) *
             </label>
             <Input
               id="price"

@@ -27,7 +27,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   }
 
   const page = typeof resolvedSP.page === "string" ? parseInt(resolvedSP.page) : 1
-  const brandParam = typeof resolvedSP.brand === "string" ? resolvedSP.brand : undefined
+  const brandsParam = typeof resolvedSP.brand === "string" ? [resolvedSP.brand] : Array.isArray(resolvedSP.brand) ? resolvedSP.brand : undefined
+  const colorsParam = typeof resolvedSP.color === "string" ? [resolvedSP.color] : Array.isArray(resolvedSP.color) ? resolvedSP.color : undefined
+  const sizesParam = typeof resolvedSP.size === "string" ? [resolvedSP.size] : Array.isArray(resolvedSP.size) ? resolvedSP.size : undefined
   const minPriceParam = typeof resolvedSP.minPrice === "string" ? resolvedSP.minPrice : undefined
   const maxPriceParam = typeof resolvedSP.maxPrice === "string" ? resolvedSP.maxPrice : undefined
 
@@ -35,14 +37,24 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const skip = (page - 1) * limit
   
   const where: any = { isActive: true, categoryId: category.id }
-  if (brandParam) where.brand = brandParam
+  if (brandsParam) where.brand = { in: brandsParam }
   if (minPriceParam || maxPriceParam) {
     where.price = {}
     if (minPriceParam) where.price.gte = parseFloat(minPriceParam)
     if (maxPriceParam) where.price.lte = parseFloat(maxPriceParam)
   }
 
-  const [productsData, total] = await Promise.all([
+  if (colorsParam || sizesParam) {
+    where.variants = {
+      some: {
+        isAvailable: true,
+        ...(colorsParam ? { color: { in: colorsParam } } : {}),
+        ...(sizesParam ? { size: { in: sizesParam } } : {}),
+      }
+    }
+  }
+
+  const [productsData, total, availableFilters] = await Promise.all([
     prisma.product.findMany({
       where,
       orderBy: { createdAt: 'desc' },
@@ -54,7 +66,28 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       },
     }),
     prisma.product.count({ where }),
+    prisma.productVariant.findMany({
+      where: { product: { categoryId: category.id, isActive: true }, isAvailable: true },
+      select: { color: true, colorHex: true, size: true },
+    }).then(variants => {
+      const colorMap = new Map<string, string>()
+      variants.forEach(v => {
+        if (v.color) {
+          colorMap.set(v.color, v.colorHex || v.color)
+        }
+      })
+      const colors = Array.from(colorMap.entries()).map(([name, hex]) => ({ name, hex }))
+      const sizes = Array.from(new Set(variants.map(v => v.size).filter(Boolean))) as string[]
+      return { colors, sizes }
+    }),
   ])
+
+  // Get available brands for this category
+  const availableBrands = await prisma.product.findMany({
+    where: { categoryId: category.id, isActive: true, brand: { not: null } },
+    select: { brand: true },
+    distinct: ['brand'],
+  }).then(products => products.map(p => p.brand as string))
 
   const formattedProducts = productsData.map((p: any) => {
     const primaryImage = p.images.find((img: any) => img.isPrimary) || p.images[0] || null
@@ -93,7 +126,13 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         </div>
         
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col md:flex-row gap-8">
-          <FilterSidebar />
+          <FilterSidebar 
+            options={{
+              brands: availableBrands,
+              colors: availableFilters.colors,
+              sizes: availableFilters.sizes
+            }} 
+          />
           
           <div className="flex-1">
             <div className="mb-6 flex items-center justify-between">

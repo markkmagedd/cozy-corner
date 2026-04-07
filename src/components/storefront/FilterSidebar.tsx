@@ -1,97 +1,223 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useState } from "react"
+import { useCallback, useState, useEffect } from "react"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
-import { Filter, X } from "lucide-react"
+import { Filter, X, ChevronDown, Check } from "lucide-react"
 
-interface FilterSidebarProps {
-  // Pass available filter options if known
+interface FilterOptions {
+  colors: { name: string; hex: string }[]
+  sizes: string[]
+  brands: string[]
 }
 
-export function FilterSidebar({}: FilterSidebarProps) {
+interface FilterSidebarProps {
+  options?: FilterOptions
+}
+
+export function FilterSidebar({ options }: FilterSidebarProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isOpen, setIsOpen] = useState(false)
 
+  // Prices
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "")
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "")
-  const [brand, setBrand] = useState(searchParams.get("brand") || "")
+
+  // Multi-select states
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(searchParams.getAll("brand"))
+  const [selectedColors, setSelectedColors] = useState<string[]>(searchParams.getAll("color"))
+  const [selectedSizes, setSelectedSizes] = useState<string[]>(searchParams.getAll("size"))
+
+  // Synchronize state with URL on initial load or popstate
+  useEffect(() => {
+    setSelectedBrands(searchParams.getAll("brand"))
+    setSelectedColors(searchParams.getAll("color"))
+    setSelectedSizes(searchParams.getAll("size"))
+    setMinPrice(searchParams.get("minPrice") || "")
+    setMaxPrice(searchParams.get("maxPrice") || "")
+  }, [searchParams])
+
+  const toggleFilter = (type: "brand" | "color" | "size", value: string) => {
+    const setters = {
+      brand: setSelectedBrands,
+      color: setSelectedColors,
+      size: setSelectedSizes,
+    }
+    const current = {
+      brand: selectedBrands,
+      color: selectedColors,
+      size: selectedSizes,
+    }
+
+    const next = current[type].includes(value)
+      ? current[type].filter(v => v !== value)
+      : [...current[type], value]
+    
+    setters[type](next)
+  }
 
   const applyFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
     
+    // Clear existing
+    params.delete("brand")
+    params.delete("color")
+    params.delete("size")
+    params.delete("minPrice")
+    params.delete("maxPrice")
+    params.delete("page")
+
+    // Set new
+    selectedBrands.forEach(v => params.append("brand", v))
+    selectedColors.forEach(v => params.append("color", v))
+    selectedSizes.forEach(v => params.append("size", v))
     if (minPrice) params.set("minPrice", minPrice)
-    else params.delete("minPrice")
-    
     if (maxPrice) params.set("maxPrice", maxPrice)
-    else params.delete("maxPrice")
-    
-    if (brand) params.set("brand", brand)
-    else params.delete("brand")
-    
-    params.delete("page") // Reset to page 1 on filter change
     
     router.push(`?${params.toString()}`)
     setIsOpen(false)
-  }, [minPrice, maxPrice, brand, router, searchParams])
+  }, [selectedBrands, selectedColors, selectedSizes, minPrice, maxPrice, router, searchParams])
 
   const clearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
+    params.delete("brand")
+    params.delete("color")
+    params.delete("size")
     params.delete("minPrice")
     params.delete("maxPrice")
-    params.delete("brand")
     params.delete("page")
+    
+    setSelectedBrands([])
+    setSelectedColors([])
+    setSelectedSizes([])
     setMinPrice("")
     setMaxPrice("")
-    setBrand("")
+    
     router.push(`?${params.toString()}`)
     setIsOpen(false)
   }, [router, searchParams])
 
+  const hasSelectedFilters = selectedBrands.length > 0 || selectedColors.length > 0 || selectedSizes.length > 0 || minPrice || maxPrice
+
   const content = (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between pb-4 border-b">
-        <h3 className="font-semibold text-lg">Filters</h3>
-        {(minPrice || maxPrice || brand) && (
-          <button onClick={clearFilters} className="text-sm text-accent hover:underline">
+    <div className="space-y-8">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <h3 className="font-serif text-xl font-bold text-slate-900">Filters</h3>
+        {hasSelectedFilters && (
+          <button onClick={clearFilters} className="text-xs font-bold text-accent uppercase tracking-widest hover:underline">
             Clear all
           </button>
         )}
       </div>
 
-      <div className="space-y-4">
-        <h4 className="font-medium text-sm">Brand</h4>
-        <Input 
-          placeholder="e.g. Patagonia" 
-          value={brand} 
-          onChange={(e) => setBrand(e.target.value)} 
-        />
-      </div>
+      {/* Brands */}
+      {options?.brands && options.brands.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Brands</h4>
+          <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+            {options.brands.map(brand => (
+              <label key={brand} className="flex items-center gap-3 group cursor-pointer">
+                <div 
+                  className={`w-5 h-5 rounded border transition-all flex items-center justify-center ${
+                    selectedBrands.includes(brand) 
+                      ? 'bg-accent border-accent text-white' 
+                      : 'border-slate-300 group-hover:border-accent'
+                  }`}
+                  onClick={() => toggleFilter("brand", brand)}
+                >
+                  {selectedBrands.includes(brand) && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                </div>
+                <span className={`text-sm ${selectedBrands.includes(brand) ? 'text-slate-900 font-semibold' : 'text-slate-600'}`}>
+                  {brand}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
+      {/* Colors */}
+      {options?.colors && options.colors.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Colors</h4>
+          <div className="flex flex-wrap gap-3">
+            {options.colors.map(color => (
+              <button
+                key={color.name}
+                onClick={() => toggleFilter("color", color.name)}
+                className={`group relative flex flex-col items-center gap-2`}
+              >
+                <div 
+                  className={`w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center ${
+                    selectedColors.includes(color.name) 
+                      ? 'border-accent p-1' 
+                      : 'border-transparent group-hover:border-slate-200'
+                  }`}
+                >
+                  <div className="w-full h-full rounded-full border border-black/5" style={{ backgroundColor: color.hex }} />
+                </div>
+                <span className={`text-[10px] font-bold uppercase tracking-tighter ${selectedColors.includes(color.name) ? 'text-accent' : 'text-slate-400'}`}>
+                  {color.name}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Sizes */}
+      {options?.sizes && options.sizes.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Sizes</h4>
+          <div className="grid grid-cols-4 gap-2">
+            {options.sizes.map(size => (
+              <button
+                key={size}
+                onClick={() => toggleFilter("size", size)}
+                className={`h-10 text-xs font-bold border transition-all rounded-lg flex items-center justify-center ${
+                  selectedSizes.includes(size)
+                    ? 'bg-primary text-white border-primary shadow-md'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-accent hover:text-accent'
+                }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Price Range */}
       <div className="space-y-4">
-        <h4 className="font-medium text-sm">Price Range</h4>
-        <div className="flex items-center gap-2">
-          <Input 
-            type="number" 
-            placeholder="Min" 
-            value={minPrice} 
-            onChange={(e) => setMinPrice(e.target.value)} 
-            className="w-full"
-          />
-          <span className="text-slate-400">-</span>
-          <Input 
-            type="number" 
-            placeholder="Max" 
-            value={maxPrice} 
-            onChange={(e) => setMaxPrice(e.target.value)} 
-            className="w-full"
-          />
+        <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Price Range</h4>
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">€</span>
+            <Input 
+              type="number" 
+              placeholder="Min" 
+              value={minPrice} 
+              onChange={(e) => setMinPrice(e.target.value)} 
+              className="pl-7 h-10 text-sm border-slate-200 focus:border-accent transition-all"
+            />
+          </div>
+          <span className="text-slate-300 font-bold">-</span>
+          <div className="relative flex-1">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">€</span>
+            <Input 
+              type="number" 
+              placeholder="Max" 
+              value={maxPrice} 
+              onChange={(e) => setMaxPrice(e.target.value)} 
+              className="pl-7 h-10 text-sm border-slate-200 focus:border-accent transition-all"
+            />
+          </div>
         </div>
       </div>
 
-      <Button onClick={applyFilters} className="w-full bg-primary">
+      <Button onClick={applyFilters} className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl shadow-lg transition-transform active:scale-[0.98]">
         Apply Filters
       </Button>
     </div>
@@ -101,27 +227,29 @@ export function FilterSidebar({}: FilterSidebarProps) {
     <>
       <Button 
         variant="outline" 
-        className="md:hidden w-full mb-4 flex items-center justify-center gap-2"
+        className="md:hidden w-full mb-6 py-6 flex items-center justify-center gap-3 rounded-2xl border-slate-200 bg-white shadow-sm font-bold"
         onClick={() => setIsOpen(true)}
       >
-        <Filter className="w-4 h-4" /> Filters
+        <Filter className="w-5 h-5 text-accent" /> Filter & Sort
       </Button>
 
-      <div className="hidden md:block w-64 shrink-0">
-        <div className="sticky top-24">
+      <div className="hidden md:block w-72 shrink-0">
+        <div className="sticky top-24 bg-slate-50/50 p-6 rounded-3xl border border-slate-100 backdrop-blur-sm">
           {content}
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setIsOpen(false)} />
-          <div className="relative w-4/5 max-w-sm bg-white h-full shadow-xl overflow-y-auto p-6 z-50 ml-auto flex flex-col">
-            <button className="absolute top-6 right-6" onClick={() => setIsOpen(false)}>
-              <X className="w-5 h-5 text-slate-500" />
+        <div className="fixed inset-0 z-[100] flex md:hidden">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+          <div className="relative w-[320px] bg-white h-full shadow-2xl overflow-y-auto p-8 z-[101] ml-auto flex flex-col animate-in slide-in-from-right duration-300">
+            <button className="absolute top-8 right-8 p-2 hover:bg-slate-100 rounded-full transition-colors" onClick={() => setIsOpen(false)}>
+              <X className="w-6 h-6 text-slate-500" />
             </button>
-            {content}
+            <div className="mt-8">
+              {content}
+            </div>
           </div>
         </div>
       )}

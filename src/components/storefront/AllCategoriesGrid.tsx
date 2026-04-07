@@ -1,16 +1,16 @@
 import Image from "next/image"
 import Link from "next/link"
 
-interface CategoryWithThumbnail {
+interface CategoryWithImage {
   id: string
   name: string
   slug: string
   description: string | null
-  thumbnailUrl: string | null
+  imageUrl: string | null       // ✅ Changed from thumbnailUrl
 }
 
 interface AllCategoriesGridProps {
-  categories: CategoryWithThumbnail[]
+  categories: CategoryWithImage[]
 }
 
 export function AllCategoriesGrid({ categories }: AllCategoriesGridProps) {
@@ -31,11 +31,11 @@ export function AllCategoriesGrid({ categories }: AllCategoriesGridProps) {
           href={`/category/${category.slug}`}
           className="group relative h-96 overflow-hidden rounded-2xl bg-slate-100 flex flex-col shadow-sm hover:shadow-md transition-shadow"
         >
-          {/* Background Image Container */}
           <div className="relative flex-1">
-            {category.thumbnailUrl ? (
+            {/* ✅ Changed from thumbnailUrl to imageUrl */}
+            {category.imageUrl ? (
               <Image
-                src={category.thumbnailUrl}
+                src={category.imageUrl}
                 alt={category.name}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -46,10 +46,8 @@ export function AllCategoriesGrid({ categories }: AllCategoriesGridProps) {
               </div>
             )}
             
-            {/* Scrim for readability */}
             <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-black/80 group-hover:to-black/90 transition-colors" />
             
-            {/* Content overlay */}
             <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
               <h3 className="text-2xl font-bold mb-2 group-hover:-translate-y-1 transition-transform">
                 {category.name}

@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/playwright-report
 
 # next.js
 /.next/
@@ -43,6 +44,11 @@ next-env.d.ts
 # local folders
 .backup/
 .agent/
+.agents/
 .next/
 node_modules/
 
+# logs
+*.log
+seed-categories.ts
+test-products.ts
