@@ -7,6 +7,12 @@
   --color-accent-foreground: #ffffff;
   --color-background: #ffffff;
   --color-foreground: #1e293b;
+  
+  /* Navbar Redesign Tokens */
+  --color-nav-bg: #ffffff;
+  --nav-blur: 16px;
+  --nav-border-opacity: 0.5;
+  --nav-height: 4.5rem;
 }
 
 @layer base {

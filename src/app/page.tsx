@@ -53,12 +53,26 @@ export default async function HomePage({ searchParams }: PageProps) {
     if (minPriceParam) where.price.gte = parseFloat(minPriceParam);
     if (maxPriceParam) where.price.lte = parseFloat(maxPriceParam);
   }
+  
   if (searchQuery) {
-    where.OR = [
-      { name: { contains: searchQuery, mode: "insensitive" } },
-      { description: { contains: searchQuery, mode: "insensitive" } },
-      { brand: { contains: searchQuery, mode: "insensitive" } },
-    ];
+    const q = searchQuery.toLowerCase();
+    if (q === "new") {
+      // For New Arrivals, we don't apply name/description filters
+      // Just keep base filters (isActive, brand, price)
+    } else if (q === "sale") {
+      // Filter by 'sale' keyword or other logic
+      where.OR = [
+        { name: { contains: "sale", mode: "insensitive" } },
+        { description: { contains: "sale", mode: "insensitive" } }
+      ];
+    } else {
+      // General user search
+      where.OR = [
+        { name: { contains: searchQuery, mode: "insensitive" } },
+        { description: { contains: searchQuery, mode: "insensitive" } },
+        { brand: { contains: searchQuery, mode: "insensitive" } },
+      ];
+    }
   }
 
   const [productsData, total, featuredCategories] = await Promise.all([
@@ -76,7 +90,7 @@ export default async function HomePage({ searchParams }: PageProps) {
     prisma.category.findMany({
       where: { isFeatured: true },
       orderBy: { displayOrder: "asc" },
-      select: { id: true, name: true, slug: true },
+      select: { id: true, name: true, slug: true, imageUrl: true },  // ✅ Added imageUrl
     }),
   ]);
 
@@ -117,6 +131,13 @@ export default async function HomePage({ searchParams }: PageProps) {
 
   const totalPages = Math.ceil(total / limit);
 
+  const getPageTitle = () => {
+    if (searchQuery === "new") return "New Arrivals";
+    if (searchQuery === "sale") return "Special Offers";
+    if (searchQuery) return `Search Results for "${searchQuery}"`;
+    return page === 1 ? "New Arrivals" : "All Products";
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -128,23 +149,16 @@ export default async function HomePage({ searchParams }: PageProps) {
           page === 1 && <HeroSection />}
 
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {searchQuery ? (
-            <div className="mb-8">
-              <h1 className="text-3xl font-serif font-bold text-slate-900">
-                Search Results
-              </h1>
-              <p className="text-slate-500 mt-2">
-                Showing {total} product{total !== 1 ? "s" : ""} for "
-                {searchQuery}"
+          <div className="mb-8">
+            <h1 className="text-4xl font-serif font-bold text-slate-900 tracking-tight">
+              {getPageTitle()}
+            </h1>
+            {searchQuery && (
+              <p className="text-slate-500 mt-3 text-lg">
+                Showing {total} product{total !== 1 ? "s" : ""} tailored for you.
               </p>
-            </div>
-          ) : (
-            <div className="mb-8">
-              <h1 className="text-3xl font-serif font-bold text-slate-900">
-                {page === 1 ? "New Arrivals" : "All Products"}
-              </h1>
-            </div>
-          )}
+            )}
+          </div>
           <div className="w-full">
             <ProductGrid products={formattedProducts} />
             <Pagination totalPages={totalPages} />

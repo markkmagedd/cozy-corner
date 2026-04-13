@@ -46,7 +46,7 @@ export default async function CategoriesPage() {
       name: cat.name,
       slug: cat.slug,
       description: cat.description,
-      thumbnailUrl: primaryImage?.url || null
+      imageUrl: primaryImage?.url || null
     }
   })
 
