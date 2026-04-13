@@ -5,7 +5,9 @@ import { ProductGrid } from "@/components/storefront/ProductGrid"
 import { FilterSidebar } from "@/components/storefront/FilterSidebar"
 import { Pagination } from "@/components/storefront/Pagination"
 import { Breadcrumbs } from "@/components/storefront/Breadcrumbs"
+import { SubcategoryNav } from "@/components/storefront/SubcategoryNav"
 import prisma from "@/lib/prisma"
+import { getCategoryDescendantIds } from "@/lib/actions/category-actions"
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>
@@ -19,12 +21,20 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   
   const category = await prisma.category.findUnique({
     where: { slug },
-    include: { parent: true }
+    include: { 
+      parent: true,
+      children: {
+        orderBy: { displayOrder: 'asc' }
+      }
+    }
   })
 
   if (!category) {
     notFound()
   }
+
+  const descendantIds = await getCategoryDescendantIds(category.id)
+  const allCategoryIds = [category.id, ...descendantIds]
 
   const page = typeof resolvedSP.page === "string" ? parseInt(resolvedSP.page) : 1
   const brandsParam = typeof resolvedSP.brand === "string" ? [resolvedSP.brand] : Array.isArray(resolvedSP.brand) ? resolvedSP.brand : undefined
@@ -36,7 +46,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const limit = 12
   const skip = (page - 1) * limit
   
-  const where: any = { isActive: true, categoryId: category.id }
+  const where: any = { isActive: true, categoryId: { in: allCategoryIds } }
   if (brandsParam) where.brand = { in: brandsParam }
   if (minPriceParam || maxPriceParam) {
     where.price = {}
@@ -67,7 +77,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     }),
     prisma.product.count({ where }),
     prisma.productVariant.findMany({
-      where: { product: { categoryId: category.id, isActive: true }, isAvailable: true },
+      where: { product: { categoryId: { in: allCategoryIds }, isActive: true }, isAvailable: true },
       select: { color: true, colorHex: true, size: true },
     }).then(variants => {
       const colorMap = new Map<string, string>()
@@ -84,7 +94,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
   // Get available brands for this category
   const availableBrands = await prisma.product.findMany({
-    where: { categoryId: category.id, isActive: true, brand: { not: null } },
+    where: { categoryId: { in: allCategoryIds }, isActive: true, brand: { not: null } },
     select: { brand: true },
     distinct: ['brand'],
   }).then(products => products.map(p => p.brand as string))
@@ -122,6 +132,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             {category.description && (
               <p className="mt-4 text-lg text-slate-600 max-w-2xl">{category.description}</p>
             )}
+            <div className="mt-8">
+              <SubcategoryNav subcategories={category.children as any} />
+            </div>
           </div>
         </div>
         

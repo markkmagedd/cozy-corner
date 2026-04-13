@@ -183,4 +183,33 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
     console.error('Failed to delete category:', error)
     return { success: false, error: 'Failed to delete category.' }
   }
+}
+
+/**
+ * Recursively fetches all descendant category IDs for a given category ID.
+ * This is used to aggregate products from child categories into the parent category view.
+ */
+export async function getCategoryDescendantIds(categoryId: string): Promise<string[]> {
+  try {
+    // Fetch all categories once to build tree in-memory - efficient for typical category counts
+    const allCategories = await prisma.category.findMany({
+      select: { id: true, parentId: true }
+    })
+
+    const descendantIds: string[] = []
+    
+    const findChildren = (parentId: string) => {
+      const children = allCategories.filter(c => c.parentId === parentId)
+      for (const child of children) {
+        descendantIds.push(child.id)
+        findChildren(child.id)
+      }
+    }
+
+    findChildren(categoryId)
+    return descendantIds
+  } catch (error) {
+    console.error('Failed to fetch category descendants:', error)
+    return []
+  }
 }   
