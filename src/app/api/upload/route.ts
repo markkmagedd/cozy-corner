@@ -26,10 +26,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Only JPEG, PNG, and WebP allowed" },
+        { error: "Only JPEG, PNG, WebP, and AVIF allowed" },
         { status: 400 }
       );
     }
