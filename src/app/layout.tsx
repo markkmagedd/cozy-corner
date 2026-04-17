@@ -17,7 +17,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased text-foreground bg-background`}>
+      <body 
+        className={`${inter.variable} ${playfair.variable} font-sans antialiased text-foreground bg-background`}
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>

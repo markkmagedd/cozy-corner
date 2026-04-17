@@ -33,9 +33,9 @@ export function SingleImageUploader({
       return
     }
 
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif']
     if (!allowedTypes.includes(file.type)) {
-      setError('Only JPEG, PNG, and WebP are allowed.')
+      setError('Only JPEG, PNG, WebP, and AVIF are allowed.')
       return
     }
 
@@ -124,7 +124,7 @@ export function SingleImageUploader({
             <input
               type="file"
               className="hidden"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/png,image/webp,image/avif"
               onChange={handleFileChange}
               disabled={isUploading}
             />
@@ -137,7 +137,7 @@ export function SingleImageUploader({
           <input
             type="file"
             className="hidden"
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg,image/png,image/webp,image/avif"
             onChange={handleFileChange}
             disabled={isUploading}
           />

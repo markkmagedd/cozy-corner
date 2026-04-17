@@ -236,7 +236,7 @@ export function ImageUploader({
           <input
             type="file"
             className="hidden"
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg,image/png,image/webp,image/avif"
             onChange={handleFileChange}
             disabled={isUploading}
           />

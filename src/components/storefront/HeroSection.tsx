@@ -47,12 +47,7 @@ export function HeroSection() {
             >
               Explore Collection
             </Link>
-            <Link 
-              href="/categories" 
-              className="inline-flex items-center justify-center rounded-full text-sm font-bold uppercase tracking-widest transition-all duration-300 h-14 px-10 bg-white/10 text-white border border-white/20 backdrop-blur-md hover:bg-white/20 active:scale-95"
-            >
-              Learn More
-            </Link>
+            
           </div>
         </motion.div>
       </div>
