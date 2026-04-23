@@ -30,7 +30,10 @@ export default async function ProductsPage({
         category: true,
         variants: true
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [
+        { displayOrder: 'asc' },
+        { createdAt: 'desc' }
+      ],
       skip,
       take: limit,
     }),

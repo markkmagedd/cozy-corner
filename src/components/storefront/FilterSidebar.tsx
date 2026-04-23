@@ -1,10 +1,10 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useState, useEffect } from "react"
+import { useCallback, useState, useEffect, useTransition } from "react"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
-import { Filter, X, ChevronDown, Check } from "lucide-react"
+import { Filter, X, ChevronDown, Check, Loader2 } from "lucide-react"
 
 interface FilterOptions {
   colors: { name: string; hex: string }[]
@@ -20,6 +20,7 @@ export function FilterSidebar({ options }: FilterSidebarProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isOpen, setIsOpen] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
   // Prices
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "")
@@ -76,8 +77,10 @@ export function FilterSidebar({ options }: FilterSidebarProps) {
     if (minPrice) params.set("minPrice", minPrice)
     if (maxPrice) params.set("maxPrice", maxPrice)
     
-    router.push(`?${params.toString()}`)
-    setIsOpen(false)
+    startTransition(() => {
+      router.push(`?${params.toString()}`)
+      setIsOpen(false)
+    })
   }, [selectedBrands, selectedColors, selectedSizes, minPrice, maxPrice, router, searchParams])
 
   const clearFilters = useCallback(() => {
@@ -95,8 +98,10 @@ export function FilterSidebar({ options }: FilterSidebarProps) {
     setMinPrice("")
     setMaxPrice("")
     
-    router.push(`?${params.toString()}`)
-    setIsOpen(false)
+    startTransition(() => {
+      router.push(`?${params.toString()}`)
+      setIsOpen(false)
+    })
   }, [router, searchParams])
 
   const hasSelectedFilters = selectedBrands.length > 0 || selectedColors.length > 0 || selectedSizes.length > 0 || minPrice || maxPrice
@@ -217,8 +222,13 @@ export function FilterSidebar({ options }: FilterSidebarProps) {
         </div>
       </div>
 
-      <Button onClick={applyFilters} className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl shadow-lg transition-transform active:scale-[0.98]">
-        Apply Filters
+      <Button 
+        onClick={applyFilters} 
+        disabled={isPending}
+        className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl shadow-lg transition-transform active:scale-[0.98] disabled:opacity-70"
+      >
+        {isPending ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
+        {isPending ? 'Applying...' : 'Apply Filters'}
       </Button>
     </div>
   )

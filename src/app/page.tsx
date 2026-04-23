@@ -78,7 +78,10 @@ export default async function HomePage({ searchParams }: PageProps) {
   const [productsData, total, featuredCategories] = await Promise.all([
     prisma.product.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy: [
+        { displayOrder: "asc" },
+        { createdAt: "desc" }
+      ],
       skip,
       take: limit,
       include: {
@@ -118,6 +121,7 @@ export default async function HomePage({ searchParams }: PageProps) {
       description: p.description,
       slug: p.slug,
       price: p.price,
+      compareAtPrice: p.compareAtPrice,
       brand: p.brand,
       categoryId: p.categoryId,
       isActive: p.isActive,

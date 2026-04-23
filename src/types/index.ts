@@ -21,6 +21,14 @@ export interface ProductVariant {
   isAvailable: boolean;
 }
 
+export type AvailabilityState = "available" | "disabled" | "oos";
+
+export interface VariantOptionWithState {
+  value: string;
+  colorHex?: string | null;
+  availabilityState: AvailabilityState;
+}
+
 export interface ProductImage {
   id: string;
   productId: string;
@@ -36,6 +44,7 @@ export interface Product {
   slug: string;
   description: string | null;
   price: number;
+  compareAtPrice?: number | null;
   brand: string | null;
   categoryId: string | null;
   isActive: boolean;

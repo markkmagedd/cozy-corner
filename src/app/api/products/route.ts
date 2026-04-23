@@ -49,7 +49,10 @@ export async function GET(request: Request) {
         break
       case 'newest':
       default:
-        orderBy = { createdAt: 'desc' }
+        orderBy = [
+          { displayOrder: 'asc' },
+          { createdAt: 'desc' }
+        ]
         break
     }
 
@@ -83,6 +86,7 @@ export async function GET(request: Request) {
         description: p.description,
         slug: p.slug,
         price: p.price,
+        compareAtPrice: p.compareAtPrice,
         brand: p.brand,
         categoryId: p.categoryId,
         primaryImage: primaryImage ? { url: primaryImage.url, altText: primaryImage.altText } : null,

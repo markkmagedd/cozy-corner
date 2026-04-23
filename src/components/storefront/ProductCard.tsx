@@ -34,9 +34,16 @@ export function ProductCard({ product }: ProductCardProps) {
         </h3>
         
         <div className="mt-2 flex items-center justify-between">
-          <p className="font-medium text-slate-900">
-            {formatPrice(product.price)}
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="font-bold text-slate-900">
+              {formatPrice(product.price)}
+            </p>
+            {product.compareAtPrice && product.compareAtPrice > product.price && (
+              <p className="text-sm text-slate-400 line-through">
+                {formatPrice(product.compareAtPrice)}
+              </p>
+            )}
+          </div>
           
           {product.availableColors && product.availableColors.length > 0 && (
             <div className="flex gap-1">

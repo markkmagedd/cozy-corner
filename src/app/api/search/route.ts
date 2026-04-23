@@ -59,6 +59,7 @@ export async function GET(request: Request) {
         description: p.description,
         slug: p.slug,
         price: p.price,
+        compareAtPrice: p.compareAtPrice,
         brand: p.brand,
         primaryImage: primaryImage ? { url: primaryImage.url, altText: primaryImage.altText } : null,
       }

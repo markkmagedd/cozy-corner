@@ -90,7 +90,7 @@ export function ProductForm({ initialData, categories, action }: ProductFormProp
 
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1" htmlFor="price">
-              Price (EUR) *
+              Current Selling Price (EUR) *
             </label>
             <Input
               id="price"
@@ -102,6 +102,24 @@ export function ProductForm({ initialData, categories, action }: ProductFormProp
               required
               className="w-full"
             />
+            <p className="text-xs text-slate-500 mt-1">This is the price the customer actually pays.</p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1" htmlFor="compareAtPrice">
+              Original Price / Compare at Price (EUR)
+            </label>
+            <Input
+              id="compareAtPrice"
+              name="compareAtPrice"
+              type="number"
+              step="0.01"
+              min="0"
+              defaultValue={initialData?.compareAtPrice || ''}
+              placeholder="e.g. 100.00"
+              className="w-full"
+            />
+            <p className="text-xs text-slate-500 mt-1">Leave empty if no discount. This will be shown crossed out.</p>
           </div>
 
           <div>

@@ -1,11 +1,12 @@
 import { Suspense } from "react"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { getProductBySlug } from "@/lib/actions/product-actions"
 import { Navbar } from "@/components/storefront/Navbar"
 import { Footer } from "@/components/storefront/Footer"
 import { ProductInfo } from "@/components/storefront/product/ProductInfo"
 import { VariantSelector } from "@/components/storefront/product/VariantSelector"
 import { ProductGallery } from "@/components/storefront/product/ProductGallery"
+import { getDefaultVariant } from "@/lib/variant-utils"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -24,45 +25,41 @@ export async function generateMetadata(props: PageProps) {
 
 export default async function ProductPage(props: PageProps) {
   const resolvedParams = await props.params
+  const searchParams = await props.searchParams
   const product = await getProductBySlug(resolvedParams.slug)
 
   if (!product) {
     notFound()
   }
 
-  // Format variant groups
-  const colors = Array.from(new Set(product.variants.filter((v: any) => v.color).map((v: any) => v.color as string)))
-  const sizes = Array.from(new Set(product.variants.filter((v: any) => v.size).map((v: any) => v.size as string)))
-  
-  const groups = []
-  
-  if (colors.length > 0) {
-    groups.push({
-      id: 'color',
-      label: 'Color Options',
-      options: colors.map(color => {
-        const variant = product.variants.find((v: any) => v.color === color)
-        return {
-          value: color,
-          colorHex: variant?.colorHex,
-          isAvailable: product.variants.some((v: any) => v.color === color && v.isAvailable)
-        }
-      })
-    })
+  const colorParam = searchParams.color as string | undefined
+  const sizeParam = searchParams.size as string | undefined
+
+  const hasColorDimension = product.variants.some(v => v.color)
+  const hasSizeDimension = product.variants.some(v => v.size)
+  const anyAvailable = product.variants.some(v => v.isAvailable)
+
+  // Redirect to default variant if current selection is invalid or missing
+  if (anyAvailable) {
+    const currentVariant = product.variants.find(v => 
+      (!hasColorDimension || v.color === colorParam) && 
+      (!hasSizeDimension || v.size === sizeParam) &&
+      v.isAvailable
+    )
+
+    if (!currentVariant || (hasColorDimension && !colorParam) || (hasSizeDimension && !sizeParam)) {
+      const defaultVariant = getDefaultVariant(product.variants)
+      if (defaultVariant) {
+        const params = new URLSearchParams()
+        if (defaultVariant.color) params.set('color', defaultVariant.color)
+        if (defaultVariant.size) params.set('size', defaultVariant.size)
+        // Use replace to avoid polluting history with invalid param states
+        redirect(`/product/${resolvedParams.slug}?${params.toString()}`)
+      }
+    }
   }
 
-  if (sizes.length > 0) {
-    groups.push({
-      id: 'size',
-      label: 'Size Options',
-      options: sizes.map(size => {
-         return {
-           value: size,
-           isAvailable: product.variants.some((v: any) => v.size === size && v.isAvailable)
-         }
-      })
-    })
-  }
+  const allOutOfStock = !anyAvailable
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -77,11 +74,16 @@ export default async function ProductPage(props: PageProps) {
             <div className="w-full lg:w-1/2 flex flex-col gap-10">
               <ProductInfo product={product} />
               
-              {groups.length > 0 && (
+              {(hasColorDimension || hasSizeDimension) && (
                 <>
                   <div className="w-full h-[1px] bg-slate-200"></div>
                   <Suspense fallback={<div className="h-40 animate-pulse bg-slate-100 rounded-lg"></div>}>
-                    <VariantSelector groups={groups} />
+                    <VariantSelector 
+                      variants={product.variants} 
+                      selectedColor={colorParam || null}
+                      selectedSize={sizeParam || null}
+                      allOutOfStock={allOutOfStock}
+                    />
                   </Suspense>
                 </>
               )}

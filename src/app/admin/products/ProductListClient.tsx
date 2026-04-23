@@ -4,9 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Plus, Pencil, Trash2, Check, X, Tag } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { DataTable } from '@/components/admin/DataTable'
+import { SortableDataTable } from '@/components/admin/SortableDataTable'
 import { DeleteConfirmDialog } from '@/components/admin/DeleteConfirmDialog'
-import { deleteProduct, toggleProductActive } from '@/lib/actions/product-actions'
+import { deleteProduct, toggleProductActive, updateProductOrder } from '@/lib/actions/product-actions'
 import { formatPrice } from '@/lib/utils'
 import type { Product, TableColumn, PaginatedResponse } from '@/types'
 
@@ -23,6 +23,14 @@ export function ProductListClient({ data }: ProductListClientProps) {
     if (!deleteId) return
     await deleteProduct(deleteId)
     setDeleteId(null)
+  }
+
+  const handleReorder = async (reorderedItems: Product[]) => {
+    const payload = reorderedItems.map((item, index) => ({
+      id: item.id,
+      displayOrder: index - reorderedItems.length // Negative numbers guarantee they float above default 0
+    }))
+    await updateProductOrder(payload)
   }
 
   const handleToggleActive = async (id: string) => {
@@ -118,7 +126,7 @@ export function ProductListClient({ data }: ProductListClientProps) {
       </div>
 
       <div className="w-full">
-        <DataTable data={data} columns={columns} searchPlaceholder="Search products by name or brand..." />
+        <SortableDataTable data={data} columns={columns} searchPlaceholder="Search products by name or brand..." onReorder={handleReorder} />
       </div>
 
       <DeleteConfirmDialog 

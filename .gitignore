@@ -52,3 +52,4 @@ node_modules/
 *.log
 seed-categories.ts
 test-products.ts
+.env*.local

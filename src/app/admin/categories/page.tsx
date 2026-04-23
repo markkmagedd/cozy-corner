@@ -11,7 +11,7 @@ export default async function CategoriesPage({
   const resolvedParams = await searchParams
   const query = resolvedParams.q || ''
   const page = parseInt(resolvedParams.page || '1', 10)
-  const limit = 10
+  const limit = 100
   const skip = (page - 1) * limit
 
   const whereClause = query

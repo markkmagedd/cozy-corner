@@ -212,4 +212,23 @@ export async function getCategoryDescendantIds(categoryId: string): Promise<stri
     console.error('Failed to fetch category descendants:', error)
     return []
   }
-}   
+}
+
+export async function updateCategoryOrder(items: { id: string; displayOrder: number }[]): Promise<ActionResult> {
+  try {
+    await prisma.$transaction(
+      items.map((item) =>
+        prisma.category.update({
+          where: { id: item.id },
+          data: { displayOrder: item.displayOrder },
+        })
+      )
+    )
+    revalidatePath('/admin/categories')
+    revalidatePath('/')
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to reorder categories:', error)
+    return { success: false, error: 'Failed to reorder categories.' }
+  }
+}

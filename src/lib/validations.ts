@@ -13,6 +13,7 @@ export const productSchema = z.object({
   name: z.string().min(1, 'Name is required').max(200),
   description: z.string().optional().nullable(),
   price: z.number().min(0, 'Price must be 0 or greater'),
+  compareAtPrice: z.number().min(0, 'Compare at price must be 0 or greater').nullable().optional(),
   brand: z.string().optional().nullable(),
   categoryId: z.string().optional().nullable(),
   variants: z.array(variantSchema).default([]),

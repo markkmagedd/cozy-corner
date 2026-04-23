@@ -11,10 +11,12 @@ export async function createProduct(formData: FormData): Promise<ActionResult<Pr
     const rawVariants = formData.get('variantsPayload') as string
     const variants = rawVariants ? JSON.parse(rawVariants) : []
 
+    const compareAtPriceRaw = formData.get('compareAtPrice') as string
     const data = {
       name: formData.get('name') as string,
       description: formData.get('description') as string | null,
       price: parseFloat(formData.get('price') as string) || 0,
+      compareAtPrice: compareAtPriceRaw ? parseFloat(compareAtPriceRaw) : null,
       brand: formData.get('brand') as string | null,
       categoryId: (formData.get('categoryId') as string) || null,
       isActive: formData.get('isActive') === 'on',
@@ -26,7 +28,7 @@ export async function createProduct(formData: FormData): Promise<ActionResult<Pr
       return { success: false, error: parsed.error.issues[0].message }
     }
 
-    const { name, description, price, brand, categoryId, variants: validatedVariants } = parsed.data
+    const { name, description, price, compareAtPrice, brand, categoryId, variants: validatedVariants } = parsed.data
     const slug = slugify(name)
     const isActive = data.isActive
 
@@ -48,6 +50,7 @@ export async function createProduct(formData: FormData): Promise<ActionResult<Pr
         slug,
         description,
         price,
+        compareAtPrice,
         brand,
         categoryId,
         isActive,
@@ -80,10 +83,12 @@ export async function updateProduct(id: string, formData: FormData): Promise<Act
     const rawVariants = formData.get('variantsPayload') as string
     const variants = rawVariants ? JSON.parse(rawVariants) : []
 
+    const compareAtPriceRaw = formData.get('compareAtPrice') as string
     const data = {
       name: formData.get('name') as string,
       description: formData.get('description') as string | null,
       price: parseFloat(formData.get('price') as string) || 0,
+      compareAtPrice: compareAtPriceRaw ? parseFloat(compareAtPriceRaw) : null,
       brand: formData.get('brand') as string | null,
       categoryId: (formData.get('categoryId') as string) || null,
       isActive: formData.get('isActive') === 'on',
@@ -95,7 +100,7 @@ export async function updateProduct(id: string, formData: FormData): Promise<Act
       return { success: false, error: parsed.error.issues[0].message }
     }
 
-    const { name, description, price, brand, categoryId, variants: validatedVariants } = parsed.data
+    const { name, description, price, compareAtPrice, brand, categoryId, variants: validatedVariants } = parsed.data
     const slug = slugify(name)
     const isActive = data.isActive
 
@@ -125,6 +130,7 @@ export async function updateProduct(id: string, formData: FormData): Promise<Act
         slug,
         description,
         price,
+        compareAtPrice,
         brand,
         categoryId,
         isActive,
@@ -214,5 +220,24 @@ export async function getProductBySlug(slug: string) {
   } catch (error) {
     console.error(`Failed to fetch product with slug ${slug}:`, error)
     return null
+  }
+}
+
+export async function updateProductOrder(items: { id: string; displayOrder: number }[]): Promise<ActionResult> {
+  try {
+    await prisma.$transaction(
+      items.map((item) =>
+        prisma.product.update({
+          where: { id: item.id },
+          data: { displayOrder: item.displayOrder },
+        })
+      )
+    )
+    revalidatePath('/admin/products')
+    revalidatePath('/')
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to reorder products:', error)
+    return { success: false, error: 'Failed to reorder products.' }
   }
 }
