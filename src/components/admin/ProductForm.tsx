@@ -20,9 +20,26 @@ export function ProductForm({ initialData, categories, action }: ProductFormProp
   const [error, setError] = useState<string | null>(null)
   const [isPending, setIsPending] = useState(false)
 
+  const enrichedCategories = categories.map((cat) => {
+    let path = cat.name || ''
+    let current = cat
+    let depth = 0
+    while (current.parentId && depth < 10) {
+      const parent = categories.find((c) => c.id === current.parentId)
+      if (parent) {
+        path = `${parent.name} > ${path}`
+        current = parent
+        depth++
+      } else {
+        break
+      }
+    }
+    return { ...cat, path }
+  }).sort((a, b) => a.path.localeCompare(b.path))
+
   const categoryOptions = [
     { value: '', label: 'Select a Category' },
-    ...categories.map(c => ({ value: c.id, label: c.name }))
+    ...enrichedCategories.map(c => ({ value: c.id, label: c.path }))
   ]
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
