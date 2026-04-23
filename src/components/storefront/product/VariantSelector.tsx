@@ -121,7 +121,7 @@ export function VariantSelector({ variants, selectedColor, selectedSize, allOutO
                       isOos && "opacity-20 cursor-not-allowed hover:border-slate-200",
                       allOutOfStock && "cursor-not-allowed"
                     )}
-                    style={{ backgroundColor: (option as { colorHex?: string | null }).colorHex || option.value.toLowerCase() }}
+                    style={{ backgroundColor: option.colorHex || option.value.toLowerCase() }}
                     title={
                       allOutOfStock || isOos ? `${option.value} - Out of Stock` : 
                       isDisabled ? `${option.value} - Not available in selected ${group.id === 'color' ? 'size' : 'color'}` : 
