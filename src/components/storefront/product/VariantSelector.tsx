@@ -59,19 +59,30 @@ export function VariantSelector({ variants, selectedColor, selectedSize, allOutO
   const sizes = extractUniqueSizes(variants)
   const matrix = buildAvailabilityMatrix(variants)
 
-  const groups = []
+  interface Option {
+    value: string;
+    colorHex?: string | null;
+  }
+
+  interface Group {
+    id: 'color' | 'size';
+    label: string;
+    options: Option[];
+  }
+
+  const groups: Group[] = []
   if (colors.length > 0) {
     groups.push({
       id: 'color',
       label: 'Color Options',
-      options: colors
+      options: colors as Option[]
     })
   }
   if (sizes.length > 0) {
     groups.push({
       id: 'size',
       label: 'Size Options',
-      options: sizes
+      options: sizes as Option[]
     })
   }
 
@@ -124,7 +135,7 @@ export function VariantSelector({ variants, selectedColor, selectedSize, allOutO
                     style={{ backgroundColor: option.colorHex || option.value.toLowerCase() }}
                     title={
                       allOutOfStock || isOos ? `${option.value} - Out of Stock` : 
-                      isDisabled ? `${option.value} - Not available in selected ${group.id === 'color' ? 'size' : 'color'}` : 
+                      isDisabled ? `${option.value} - Not available in selected size` : 
                       option.value
                     }
                     aria-label={`Select color ${option.value}`}
@@ -151,7 +162,7 @@ export function VariantSelector({ variants, selectedColor, selectedSize, allOutO
                   )}
                   title={
                     allOutOfStock || isOos ? 'Out of Stock' : 
-                    isDisabled ? `Not available in selected ${group.id === 'color' ? 'size' : 'color'}` : 
+                    isDisabled ? `Not available in selected color` : 
                     ''
                   }
                 >
