@@ -2,22 +2,43 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Plus, Pencil, Trash2, Check, X, Tag } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { SortableDataTable } from '@/components/admin/SortableDataTable'
 import { DeleteConfirmDialog } from '@/components/admin/DeleteConfirmDialog'
 import { deleteProduct, toggleProductActive, updateProductOrder } from '@/lib/actions/product-actions'
 import { formatPrice } from '@/lib/utils'
-import type { Product, TableColumn, PaginatedResponse } from '@/types'
+import type { Product, TableColumn, PaginatedResponse, Category } from '@/types'
 
 interface ProductListClientProps {
-  data: PaginatedResponse<Product>
+  data: PaginatedResponse<Product> & {
+    categories?: Partial<Category>[]
+  }
 }
 
 export function ProductListClient({ data }: ProductListClientProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
+  
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [deleteName, setDeleteName] = useState<string>('')
   const [isToggling, setIsToggling] = useState<string | null>(null)
+  
+  const selectedCategoryId = searchParams.get('categoryId') || ''
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCategoryId = e.target.value
+    const params = new URLSearchParams(searchParams)
+    if (newCategoryId) {
+      params.set('categoryId', newCategoryId)
+    } else {
+      params.delete('categoryId')
+    }
+    params.set('page', '1')
+    router.push(`${pathname}?${params.toString()}`)
+  }
 
   const handleConfirmDelete = async () => {
     if (!deleteId) return
@@ -111,6 +132,24 @@ export function ProductListClient({ data }: ProductListClientProps) {
     }
   ]
 
+  const enrichedCategories = data.categories?.map((cat) => {
+    let path = cat.name || ''
+    let current = cat
+    // Prevent infinite loops just in case of circular references
+    let depth = 0
+    while (current.parentId && depth < 10) {
+      const parent = data.categories?.find((c) => c.id === current.parentId)
+      if (parent) {
+        path = `${parent.name} > ${path}`
+        current = parent
+        depth++
+      } else {
+        break
+      }
+    }
+    return { ...cat, path }
+  }).sort((a, b) => a.path.localeCompare(b.path)) || []
+
   return (
     <div className="space-y-6 flex flex-col items-center">
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center w-full">
@@ -126,7 +165,28 @@ export function ProductListClient({ data }: ProductListClientProps) {
       </div>
 
       <div className="w-full">
-        <SortableDataTable data={data} columns={columns} searchPlaceholder="Search products by name or brand..." onReorder={handleReorder} />
+        <SortableDataTable 
+          data={data} 
+          columns={columns} 
+          searchPlaceholder="Search products by name or brand..." 
+          onReorder={handleReorder} 
+          filtersSlot={
+            enrichedCategories.length > 0 ? (
+              <select
+                value={selectedCategoryId}
+                onChange={handleCategoryChange}
+                className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">All Categories</option>
+                {enrichedCategories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.path}
+                  </option>
+                ))}
+              </select>
+            ) : null
+          }
+        />
       </div>
 
       <DeleteConfirmDialog 

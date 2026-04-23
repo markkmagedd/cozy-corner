@@ -29,6 +29,7 @@ interface SortableDataTableProps<T> {
   columns: TableColumn<T>[]
   searchPlaceholder?: string
   onReorder?: (items: T[]) => void
+  filtersSlot?: React.ReactNode
 }
 
 function SortableRow<T extends { id: string }>({ 
@@ -82,7 +83,8 @@ export function SortableDataTable<T extends { id: string }>({
   data, 
   columns, 
   searchPlaceholder = 'Search...',
-  onReorder 
+  onReorder,
+  filtersSlot
 }: SortableDataTableProps<T>) {
   const router = useRouter()
   const pathname = usePathname()
@@ -98,13 +100,13 @@ export function SortableDataTable<T extends { id: string }>({
   }, [])
   
   // Reset items when data changes
-  useState(() => {
+  useEffect(() => {
     setItems(data.items)
-  })
+  }, [data.items])
 
   // Determine if drag is enabled (only on first page, no search)
   const isFirstPage = !searchParams.get('page') || searchParams.get('page') === '1'
-  const hasNoSearch = !currentSearch
+  const hasNoSearch = !currentSearch 
   const isDragEnabled = !!onReorder && isFirstPage && hasNoSearch
 
   const sensors = useSensors(
@@ -152,12 +154,12 @@ export function SortableDataTable<T extends { id: string }>({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <form onSubmit={handleSearch} className="flex gap-2 max-w-sm w-full">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <form onSubmit={handleSearch} className="flex gap-2 w-full sm:w-auto sm:max-w-sm">
           <div className="relative w-full">
              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
              <Input 
-                className="pl-10" 
+                className="pl-10 w-full" 
                 placeholder={searchPlaceholder} 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -165,6 +167,11 @@ export function SortableDataTable<T extends { id: string }>({
           </div>
           <Button type="submit" variant="outline">Search</Button>
         </form>
+        {filtersSlot && (
+          <div className="w-full sm:w-auto">
+            {filtersSlot}
+          </div>
+        )}
       </div>
 
       <div className="bg-white border text-slate-800 border-slate-200 rounded-xl overflow-hidden shadow-sm">

@@ -6,24 +6,29 @@ export const dynamic = 'force-dynamic'
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; page?: string }>
+  searchParams: Promise<{ q?: string; page?: string; categoryId?: string }>
 }) {
   const resolvedParams = await searchParams
   const query = resolvedParams.q || ''
   const page = parseInt(resolvedParams.page || '1', 10)
+  const categoryId = resolvedParams.categoryId || ''
   const limit = 10
   const skip = (page - 1) * limit
 
-  const whereClause = query
-    ? {
-        OR: [
-          { name: { contains: query, mode: 'insensitive' as const } },
-          { brand: { contains: query, mode: 'insensitive' as const } },
-        ]
-      }
-    : {}
+  const whereClause: any = {}
+  
+  if (query) {
+    whereClause.OR = [
+      { name: { contains: query, mode: 'insensitive' as const } },
+      { brand: { contains: query, mode: 'insensitive' as const } },
+    ]
+  }
 
-  const [products, total] = await Promise.all([
+  if (categoryId) {
+    whereClause.categoryId = categoryId
+  }
+
+  const [products, total, categories] = await Promise.all([
     prisma.product.findMany({
       where: whereClause,
       include: {
@@ -38,6 +43,10 @@ export default async function ProductsPage({
       take: limit,
     }),
     prisma.product.count({ where: whereClause }),
+    prisma.category.findMany({
+      select: { id: true, name: true, parentId: true },
+      orderBy: { name: 'asc' }
+    })
   ])
 
   const totalPages = Math.ceil(total / limit)
@@ -50,6 +59,7 @@ export default async function ProductsPage({
       total,
       totalPages,
     },
+    categories: categories as any[]
   }
 
   return <ProductListClient data={data} />

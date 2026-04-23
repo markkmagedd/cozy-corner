@@ -25,7 +25,6 @@ export default async function CategoriesPage({
 
   const [categories, total] = await Promise.all([
     prisma.category.findMany({
-      where: whereClause,
       include: {
         parent: true,
         _count: {
@@ -36,10 +35,9 @@ export default async function CategoriesPage({
         { displayOrder: 'asc' },
         { name: 'asc' }
       ],
-      skip,
-      take: limit,
+      take: 1000,
     }),
-    prisma.category.count({ where: whereClause }),
+    prisma.category.count(),
   ])
 
   const totalPages = Math.ceil(total / limit)

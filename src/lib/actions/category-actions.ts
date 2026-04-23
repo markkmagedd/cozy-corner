@@ -29,11 +29,14 @@ export async function createCategory(formData: FormData): Promise<ActionResult<C
     }
 
     const { name, description, parentId, isFeatured, displayOrder } = parsed.data
-    const slug = slugify(name)
-
-    const existing = await prisma.category.findUnique({ where: { slug } })
-    if (existing) {
-      return { success: false, error: 'A category with this name already exists.' }
+    
+    // Generate unique slug
+    let baseSlug = slugify(name)
+    let slug = baseSlug
+    let counter = 1
+    while (await prisma.category.findUnique({ where: { slug } })) {
+      slug = `${baseSlug}-${counter}`
+      counter++
     }
 
     const category = await prisma.category.create({
@@ -80,19 +83,18 @@ export async function updateCategory(id: string, formData: FormData): Promise<Ac
     }
 
     const { name, description, parentId, isFeatured, displayOrder } = parsed.data
-
+    
     if (parentId === id) {
       return { success: false, error: 'A category cannot be its own parent.' }
     }
 
-    const slug = slugify(name)
-
-    const existing = await prisma.category.findFirst({
-      where: { slug, id: { not: id } }
-    })
-
-    if (existing) {
-      return { success: false, error: 'Another category with this name already exists.' }
+    // Generate unique slug
+    let baseSlug = slugify(name)
+    let slug = baseSlug
+    let counter = 1
+    while (await prisma.category.findFirst({ where: { slug, id: { not: id } } })) {
+      slug = `${baseSlug}-${counter}`
+      counter++
     }
 
     // ✅ Get old image to clean up from R2 if it changed

@@ -29,13 +29,17 @@ export async function createProduct(formData: FormData): Promise<ActionResult<Pr
     }
 
     const { name, description, price, compareAtPrice, brand, categoryId, variants: validatedVariants } = parsed.data
-    const slug = slugify(name)
-    const isActive = data.isActive
-
-    const existing = await prisma.product.findUnique({ where: { slug } })
-    if (existing) {
-      return { success: false, error: 'A product with this name already exists.' }
+    
+    // Generate unique slug
+    let baseSlug = slugify(name)
+    let slug = baseSlug
+    let counter = 1
+    while (await prisma.product.findUnique({ where: { slug } })) {
+      slug = `${baseSlug}-${counter}`
+      counter++
     }
+    
+    const isActive = data.isActive
 
     // Ensure variant SKUs are unique
     const skus = validatedVariants.map(v => v.sku)
@@ -101,16 +105,17 @@ export async function updateProduct(id: string, formData: FormData): Promise<Act
     }
 
     const { name, description, price, compareAtPrice, brand, categoryId, variants: validatedVariants } = parsed.data
-    const slug = slugify(name)
-    const isActive = data.isActive
-
-    const existing = await prisma.product.findFirst({
-      where: { slug, id: { not: id } }
-    })
     
-    if (existing) {
-      return { success: false, error: 'Another product with this name already exists.' }
+    // Generate unique slug
+    let baseSlug = slugify(name)
+    let slug = baseSlug
+    let counter = 1
+    while (await prisma.product.findFirst({ where: { slug, id: { not: id } } })) {
+      slug = `${baseSlug}-${counter}`
+      counter++
     }
+    
+    const isActive = data.isActive
 
     const skus = validatedVariants.map(v => v.sku)
     const duplicateSkus = skus.filter((sku, index) => skus.indexOf(sku) !== index)
