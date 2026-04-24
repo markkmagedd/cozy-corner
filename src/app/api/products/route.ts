@@ -89,6 +89,8 @@ export async function GET(request: Request) {
         compareAtPrice: p.compareAtPrice,
         brand: p.brand,
         categoryId: p.categoryId,
+        isActive: p.isActive,
+        isOffer: p.isOffer,
         primaryImage: primaryImage ? { url: primaryImage.url, altText: primaryImage.altText } : null,
         availableColors,
         availableSizes,

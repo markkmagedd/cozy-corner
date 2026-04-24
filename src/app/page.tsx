@@ -122,6 +122,7 @@ export default async function HomePage({ searchParams }: PageProps) {
       brand: p.brand,
       categoryId: p.categoryId,
       isActive: p.isActive,
+      isOffer: p.isOffer,
       primaryImage: primaryImage
         ? { url: primaryImage.url, altText: primaryImage.altText }
         : null,
