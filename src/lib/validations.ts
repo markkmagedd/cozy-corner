@@ -16,6 +16,8 @@ export const productSchema = z.object({
   compareAtPrice: z.number().min(0, 'Compare at price must be 0 or greater').nullable().optional(),
   brand: z.string().optional().nullable(),
   categoryId: z.string().optional().nullable(),
+  isActive: z.boolean().default(true),
+  isOffer: z.boolean().default(false),
   variants: z.array(variantSchema).default([]),
 });
 

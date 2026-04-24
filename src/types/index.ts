@@ -19,6 +19,7 @@ export interface ProductVariant {
   size: string | null;
   sku: string;
   isAvailable: boolean;
+  displayOrder?: number;
 }
 
 export type AvailabilityState = "available" | "disabled" | "oos";
@@ -48,6 +49,7 @@ export interface Product {
   brand: string | null;
   categoryId: string | null;
   isActive: boolean;
+  isOffer: boolean;
   variants?: ProductVariant[];
   images?: ProductImage[];
   // Application layer computed properties for API

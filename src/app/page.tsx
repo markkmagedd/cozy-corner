@@ -60,11 +60,8 @@ export default async function HomePage({ searchParams }: PageProps) {
       // For New Arrivals, we don't apply name/description filters
       // Just keep base filters (isActive, brand, price)
     } else if (q === "sale") {
-      // Filter by 'sale' keyword or other logic
-      where.OR = [
-        { name: { contains: "sale", mode: "insensitive" } },
-        { description: { contains: "sale", mode: "insensitive" } }
-      ];
+      // Use the explicit isOffer field
+      where.isOffer = true;
     } else {
       // General user search
       where.OR = [

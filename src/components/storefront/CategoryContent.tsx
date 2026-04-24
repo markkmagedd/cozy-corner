@@ -62,7 +62,9 @@ export async function CategoryContent({ slug, resolvedSP }: CategoryContentProps
       take: limit,
       include: {
         images: { orderBy: { displayOrder: 'asc' } },
-        variants: true,
+        variants: {
+          where: { isAvailable: true }
+        },
       },
     }),
     prisma.product.count({ where }),
@@ -89,6 +91,13 @@ export async function CategoryContent({ slug, resolvedSP }: CategoryContentProps
 
   const formattedProducts = productsData.map((p: any) => {
     const primaryImage = p.images.find((img: any) => img.isPrimary) || p.images[0] || null
+    const availableColors = Array.from(
+      new Set(p.variants.map((v: any) => v.color).filter(Boolean))
+    ) as string[]
+    const availableSizes = Array.from(
+      new Set(p.variants.map((v: any) => v.size).filter(Boolean))
+    ) as string[]
+    
     return {
       id: p.id,
       name: p.name,
@@ -100,6 +109,8 @@ export async function CategoryContent({ slug, resolvedSP }: CategoryContentProps
       categoryId: p.categoryId,
       isActive: p.isActive,
       primaryImage: primaryImage ? { url: primaryImage.url, altText: primaryImage.altText } : null,
+      availableColors,
+      availableSizes,
     }
   })
 

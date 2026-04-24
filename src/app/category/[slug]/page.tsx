@@ -5,6 +5,9 @@ import { CategoryContent } from "@/components/storefront/CategoryContent"
 import { CategoryLowerSkeleton } from "@/components/storefront/CategoryLowerSkeleton"
 import { CategoryHeader } from "@/components/storefront/CategoryHeader"
 import { Skeleton } from "@/components/ui/Skeleton"
+import { Metadata } from "next"
+
+export const dynamic = "force-dynamic"
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>

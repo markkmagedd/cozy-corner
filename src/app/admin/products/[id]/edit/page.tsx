@@ -9,7 +9,9 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
     prisma.product.findUnique({ 
       where: { id: resolvedParams.id },
       include: { 
-        variants: true,
+        variants: {
+          orderBy: { displayOrder: 'asc' }
+        },
         images: {
           orderBy: { displayOrder: 'asc' }
         }

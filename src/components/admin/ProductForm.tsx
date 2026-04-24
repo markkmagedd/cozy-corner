@@ -163,7 +163,7 @@ export function ProductForm({ initialData, categories, action }: ProductFormProp
             </Select>
           </div>
 
-          <div className="flex flex-col justify-center pt-6">
+          <div className="flex flex-col gap-4 pt-6">
             <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700">
               <input 
                 type="checkbox" 
@@ -172,6 +172,16 @@ export function ProductForm({ initialData, categories, action }: ProductFormProp
                 className="h-4 w-4 rounded border-slate-300 text-pink-600 focus:ring-pink-500"
               />
               <span>Active (Visible on Storefront)</span>
+            </label>
+
+            <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700">
+              <input 
+                type="checkbox" 
+                name="isOffer"
+                defaultChecked={initialData?.isOffer || false}
+                className="h-4 w-4 rounded border-slate-300 text-pink-600 focus:ring-pink-500"
+              />
+              <span>Show in Offers Tab</span>
             </label>
           </div>
         </div>
