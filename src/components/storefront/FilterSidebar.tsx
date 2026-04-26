@@ -237,7 +237,7 @@ export function FilterSidebar({ options }: FilterSidebarProps) {
     <>
       <Button 
         variant="outline" 
-        className="md:hidden w-full mb-6 py-6 flex items-center justify-center gap-3 rounded-2xl border-slate-200 bg-white shadow-sm font-bold"
+        className="md:hidden w-full mb-2 py-4 flex items-center justify-center gap-3 rounded-xl border-slate-200 bg-white shadow-sm font-bold"
         onClick={() => setIsOpen(true)}
       >
         <Filter className="w-5 h-5 text-accent" /> Filter & Sort
@@ -253,7 +253,7 @@ export function FilterSidebar({ options }: FilterSidebarProps) {
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex md:hidden">
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
-          <div className="relative w-[320px] bg-white h-full shadow-2xl overflow-y-auto p-8 z-[101] ml-auto flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="relative w-[85%] max-w-[320px] bg-white h-full shadow-2xl overflow-y-auto p-8 z-[101] ml-auto flex flex-col animate-in slide-in-from-right duration-300">
             <button className="absolute top-8 right-8 p-2 hover:bg-slate-100 rounded-full transition-colors" onClick={() => setIsOpen(false)}>
               <X className="w-6 h-6 text-slate-500" />
             </button>

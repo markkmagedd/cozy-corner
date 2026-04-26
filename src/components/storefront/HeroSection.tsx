@@ -31,7 +31,7 @@ export function HeroSection() {
           <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-[0.2em] uppercase text-accent bg-accent/10 rounded-full border border-accent/20">
             Elevated Essentials
           </span>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white leading-[1.1] tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white leading-[1.1] tracking-tight">
             Elevate your <br />
             <span className="text-accent italic">daily</span> experience.
           </h1>

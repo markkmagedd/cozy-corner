@@ -35,12 +35,12 @@ export async function CategoryHeader({ slug }: CategoryHeaderProps) {
   ]
 
   return (
-    <div className="bg-slate-50 py-12 border-b border-slate-200 overflow-hidden">
+    <div className="bg-slate-50 py-8 md:py-12 border-b border-slate-200 overflow-hidden">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row gap-12 items-center lg:items-start">
-          <div className="flex-1 space-y-4">
+          <div className="flex-1 w-full min-w-0 space-y-4">
             <Breadcrumbs items={breadcrumbs} />
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight">
               {category.name}
             </h1>
             {category.description && (

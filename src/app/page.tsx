@@ -141,7 +141,7 @@ export default async function HomePage({ searchParams }: PageProps) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col overflow-x-hidden">
       <Navbar />
       <main className="flex-1">
         {!searchQuery &&
@@ -152,7 +152,7 @@ export default async function HomePage({ searchParams }: PageProps) {
 
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="mb-8">
-            <h1 className="text-4xl font-serif font-bold text-slate-900 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tight">
               {getPageTitle()}
             </h1>
             {searchQuery && (

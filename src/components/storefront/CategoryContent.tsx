@@ -118,7 +118,7 @@ export async function CategoryContent({ slug, resolvedSP }: CategoryContentProps
   const totalPages = Math.ceil(total / limit)
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col md:flex-row gap-8">
+    <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex flex-col md:flex-row gap-4 md:gap-8">
       <FilterSidebar 
         options={{
           brands: availableBrands,
@@ -128,7 +128,7 @@ export async function CategoryContent({ slug, resolvedSP }: CategoryContentProps
       />
       
       <div className="flex-1">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-2 md:mb-6 flex items-center justify-between">
           <p className="text-sm text-slate-500">Showing {total} product{total !== 1 ? 's' : ''}</p>
         </div>
         <ProductGrid products={formattedProducts} />

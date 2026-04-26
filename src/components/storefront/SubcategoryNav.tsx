@@ -29,8 +29,8 @@ export function SubcategoryNav({ subcategories, activeSlug }: SubcategoryNavProp
   }
 
   return (
-    <div className="mb-10 -mx-4 px-4 sm:mx-0 sm:px-0">
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+    <div className="mb-6 md:mb-10">
+      <div className="flex flex-wrap gap-2 md:gap-3">
         {subcategories.map((sub) => {
           const isActive = sub.slug === optimisticSlug
           return (
@@ -39,7 +39,7 @@ export function SubcategoryNav({ subcategories, activeSlug }: SubcategoryNavProp
               onClick={() => handleSubcategoryClick(sub.slug)}
               disabled={isPending && sub.slug !== optimisticSlug}
               className={cn(
-                "flex-shrink-0 px-6 py-2.5 rounded-full border text-sm font-medium transition-all duration-300 active:scale-95 snap-start cursor-pointer disabled:opacity-50",
+                "flex-shrink-0 px-4 py-2 md:px-6 md:py-2.5 rounded-full border text-sm font-medium transition-all duration-300 active:scale-95 cursor-pointer disabled:opacity-50",
                 isActive 
                   ? "border-slate-900 bg-slate-900 text-white shadow-md" 
                   : "border-slate-200 bg-white text-slate-600 hover:border-slate-900 hover:text-slate-900 hover:shadow-sm"

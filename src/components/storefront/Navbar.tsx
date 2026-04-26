@@ -55,25 +55,25 @@ export function Navbar() {
           <nav className="hidden md:flex items-center gap-2 h-full">
             <Link 
               href="/categories" 
-              className="text-sm font-semibold tracking-wide text-primary/80 hover:text-accent transition-all duration-200 h-10 px-4 py-2 flex items-center rounded-full hover:bg-slate-100/50"
+              className="text-sm font-semibold tracking-wide text-primary/80 hover:text-accent transition-all duration-200 h-11 px-4 py-2 flex items-center rounded-full hover:bg-slate-100/50"
             >
               Categories
             </Link>
             <Link 
               href="/?search=new" 
-              className="text-sm font-semibold tracking-wide text-primary/80 hover:text-accent transition-all duration-200 h-10 px-4 py-2 flex items-center rounded-full hover:bg-slate-100/50"
+              className="text-sm font-semibold tracking-wide text-primary/80 hover:text-accent transition-all duration-200 h-11 px-4 py-2 flex items-center rounded-full hover:bg-slate-100/50"
             >
               New Arrivals
             </Link>
             <Link 
               href="/?search=sale" 
-              className="text-sm font-semibold tracking-wide text-primary/80 hover:text-accent transition-all duration-200 h-10 px-4 py-2 flex items-center rounded-full hover:bg-slate-100/50"
+              className="text-sm font-semibold tracking-wide text-primary/80 hover:text-accent transition-all duration-200 h-11 px-4 py-2 flex items-center rounded-full hover:bg-slate-100/50"
             >
               Offers
             </Link>
             <Link 
               href="#footer" 
-              className="text-sm font-semibold tracking-wide text-primary/80 hover:text-accent transition-all duration-200 h-10 px-4 py-2 flex items-center rounded-full hover:bg-slate-100/50"
+              className="text-sm font-semibold tracking-wide text-primary/80 hover:text-accent transition-all duration-200 h-11 px-4 py-2 flex items-center rounded-full hover:bg-slate-100/50"
             >
               Contact Us
             </Link>

@@ -41,7 +41,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
           {images.map((image, index) => (
             <button
               key={image.id}

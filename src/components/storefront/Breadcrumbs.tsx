@@ -13,7 +13,7 @@ interface BreadcrumbsProps {
 export function Breadcrumbs({ items }: BreadcrumbsProps) {
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
-      <ol className="flex items-center space-x-2 text-sm text-slate-500">
+      <ol className="flex flex-wrap items-center gap-y-1 space-x-2 text-sm text-slate-500">
         <li>
           <Link href="/" className="hover:text-accent transition-colors">
             Home
