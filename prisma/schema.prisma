@@ -60,6 +60,7 @@ model ProductVariant {
   product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   color       String?
   colorHex    String?
+  secondaryColorHex String?
   size        String?
   sku         String   @unique
   isAvailable Boolean  @default(true)

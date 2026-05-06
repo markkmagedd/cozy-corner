@@ -4,13 +4,13 @@ import { ProductVariant, AvailabilityState } from "@/types";
  * Extracts unique colors from variants while preserving order of first appearance.
  */
 export function extractUniqueColors(variants: ProductVariant[]) {
-  const colors = new Map<string, string | null>();
+  const colors = new Map<string, { colorHex: string | null; secondaryColorHex: string | null }>();
   variants.forEach(v => {
     if (v.color && !colors.has(v.color)) {
-      colors.set(v.color, v.colorHex);
+      colors.set(v.color, { colorHex: v.colorHex, secondaryColorHex: v.secondaryColorHex || null });
     }
   });
-  return Array.from(colors.entries()).map(([value, colorHex]) => ({ value, colorHex }));
+  return Array.from(colors.entries()).map(([value, { colorHex, secondaryColorHex }]) => ({ value, colorHex, secondaryColorHex }));
 }
 
 /**

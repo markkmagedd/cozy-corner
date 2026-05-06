@@ -4,6 +4,7 @@ export const variantSchema = z.object({
   id: z.string().optional(),
   color: z.string().optional().nullable(),
   colorHex: z.string().optional().nullable(),
+  secondaryColorHex: z.string().optional().nullable(),
   size: z.string().optional().nullable(),
   sku: z.string().min(1, 'SKU is required').max(50),
   isAvailable: z.boolean().default(true),

@@ -62,6 +62,7 @@ export function VariantSelector({ variants, selectedColor, selectedSize, allOutO
   interface Option {
     value: string;
     colorHex?: string | null;
+    secondaryColorHex?: string | null;
   }
 
   interface Group {
@@ -132,7 +133,11 @@ export function VariantSelector({ variants, selectedColor, selectedSize, allOutO
                       isOos && "opacity-20 cursor-not-allowed hover:border-slate-200",
                       allOutOfStock && "cursor-not-allowed"
                     )}
-                    style={{ backgroundColor: option.colorHex || option.value.toLowerCase() }}
+                    style={
+                      option.secondaryColorHex 
+                        ? { background: `linear-gradient(135deg, ${option.colorHex || option.value.toLowerCase()} 50%, ${option.secondaryColorHex} 50%)` }
+                        : { backgroundColor: option.colorHex || option.value.toLowerCase() }
+                    }
                     title={
                       allOutOfStock || isOos ? `${option.value} - Out of Stock` : 
                       isDisabled ? `${option.value} - Not available in selected size` : 

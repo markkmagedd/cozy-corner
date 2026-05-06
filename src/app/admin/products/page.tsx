@@ -1,5 +1,6 @@
 import prisma from '@/lib/prisma'
 import { ProductListClient } from './ProductListClient'
+import { getCategoryDescendantIds } from '@/lib/actions/category-actions'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,7 +26,8 @@ export default async function ProductsPage({
   }
 
   if (categoryId) {
-    whereClause.categoryId = categoryId
+    const descendantIds = await getCategoryDescendantIds(categoryId)
+    whereClause.categoryId = { in: [categoryId, ...descendantIds] }
   }
 
   const [products, total, categories] = await Promise.all([

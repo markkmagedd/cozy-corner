@@ -16,6 +16,7 @@ export interface ProductVariant {
   productId: string;
   color: string | null;
   colorHex: string | null;
+  secondaryColorHex?: string | null;
   size: string | null;
   sku: string;
   isAvailable: boolean;

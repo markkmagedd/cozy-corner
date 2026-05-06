@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/Input"
 import { Filter, X, ChevronDown, Check, Loader2 } from "lucide-react"
 
 interface FilterOptions {
-  colors: { name: string; hex: string }[]
+  colors: { name: string; hex: string; secondaryHex?: string | null }[]
   sizes: string[]
   brands: string[]
 }
@@ -161,7 +161,14 @@ export function FilterSidebar({ options }: FilterSidebarProps) {
                       : 'border-transparent group-hover:border-slate-200'
                   }`}
                 >
-                  <div className="w-full h-full rounded-full border border-black/5" style={{ backgroundColor: color.hex }} />
+                  <div 
+                    className="w-full h-full rounded-full border border-black/5" 
+                    style={
+                      color.secondaryHex 
+                        ? { background: `linear-gradient(135deg, ${color.hex} 50%, ${color.secondaryHex} 50%)` }
+                        : { backgroundColor: color.hex }
+                    } 
+                  />
                 </div>
                 <span className={`text-[10px] font-bold uppercase tracking-tighter ${selectedColors.includes(color.name) ? 'text-accent' : 'text-slate-400'}`}>
                   {color.name}

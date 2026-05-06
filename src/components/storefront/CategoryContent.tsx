@@ -70,15 +70,15 @@ export async function CategoryContent({ slug, resolvedSP }: CategoryContentProps
     prisma.product.count({ where }),
     prisma.productVariant.findMany({
       where: { product: { categoryId: { in: allCategoryIds }, isActive: true }, isAvailable: true },
-      select: { color: true, colorHex: true, size: true },
+      select: { color: true, colorHex: true, secondaryColorHex: true, size: true },
     }).then(variants => {
-      const colorMap = new Map<string, string>()
+      const colorMap = new Map<string, { hex: string, secondaryHex: string | null }>()
       variants.forEach(v => {
         if (v.color) {
-          colorMap.set(v.color, v.colorHex || v.color)
+          colorMap.set(v.color, { hex: v.colorHex || v.color, secondaryHex: v.secondaryColorHex || null })
         }
       })
-      const colors = Array.from(colorMap.entries()).map(([name, hex]) => ({ name, hex }))
+      const colors = Array.from(colorMap.entries()).map(([name, { hex, secondaryHex }]) => ({ name, hex, secondaryHex }))
       const sizes = Array.from(new Set(variants.map(v => v.size).filter(Boolean))) as string[]
       return { colors, sizes }
     }),
